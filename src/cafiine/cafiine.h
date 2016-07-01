@@ -31,11 +31,10 @@ struct bss_t {
 #define bss (*bss_ptr)
 
 void memset_bss();
-void cafiine_connect(void* pClient);
-void cafiine_disconnect(void *pClient);
-//void cafiine_disconnect(int clientId);
+void cafiine_connect(void *pClient, int clientId, int isFSA);
+void cafiine_disconnect(void *pClient, int clientId, int isFSA);
 int cafiine_handshake(int sock);
-int cafiine_fopen(void* pClient, int *result, const char *path, const char *mode, int *handle);
+int cafiine_fopen(void* pClient, int clientId, int *result, const char *path, const char *mode, int *handle, int isFSA);
 int cafiine_fread(void* pClient, int *result, void *buffer, int size, int count, int fd);
 int cafiine_fclose(void* pClient, int *result, int fd);
 int cafiine_fsetpos(void* pClient, int *result, int fd, int set);

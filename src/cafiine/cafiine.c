@@ -84,11 +84,11 @@ void memset_bss() {
 	memset(bss_ptr, 0, sizeof(struct bss_t));
 }
 
-void cafiine_connect(void *pClient) {
+void cafiine_connect(void *pClient, int clientId, int isFSA) {
 	struct sockaddr_in addr;
 	int sock, ret;
 	
-	int client = client_num_alloc(pClient);
+	int client = (isFSA == 1) ? clientId : client_num_alloc(pClient);
 	
 	socket_lib_init();
 	
@@ -97,7 +97,7 @@ void cafiine_connect(void *pClient) {
 	
 	addr.sin_family = AF_INET;
 	addr.sin_port = 7332;
-	addr.sin_addr.s_addr = ( (192<<24) | (168<<16) | (2<<8) | (15<<0) ); // insert your IP here
+	addr.sin_addr.s_addr = ((192<<24) | (168<<16) | (2<<8) | (15<<0));
 	
 	ret = connect(sock, (void *)&addr, sizeof(addr));
 	CHECK_ERROR(ret < 0);
@@ -105,7 +105,11 @@ void cafiine_connect(void *pClient) {
 	CHECK_ERROR(ret < 0);
 	CHECK_ERROR(ret == BYTE_NORMAL);
 	
-	bss.socket_fs[client] = sock;
+	if (isFSA == 1)
+		bss.socket_fsa[client] = sock;
+	else
+		bss.socket_fs[client] = sock;
+	
 	
 	return;
 error:
@@ -115,9 +119,12 @@ error:
 }
 
 
-void cafiine_disconnect(void *pClient) {
-	int clientId = client_num(pClient);
-	int sock = bss.socket_fs[clientId];
+void cafiine_disconnect(void *pClient, int clientId, int isFSA) {
+	int sock;
+	if (isFSA == 1)
+		sock = bss.socket_fsa[clientId];
+	else
+		sock = bss.socket_fs[client_num(pClient)];
 	
 	CHECK_ERROR(sock == -1);
 	socketclose(sock);
@@ -154,13 +161,16 @@ error:
 	return ret;
 }
 
-int cafiine_fopen(void* pClient, int *result, const char *path, const char *mode, int *handle) {
+int cafiine_fopen(void* pClient, int clientId, int *result, const char *path, const char *mode, int *handle, int isFSA) {
 	while (bss.lock) GX2WaitForVsync();
 	
 	bss.lock = 1;
 	
-	int clientId = client_num(pClient);
-	int sock = bss.socket_fs[clientId];
+	int sock;
+	if (isFSA == 1)
+		sock = bss.socket_fsa[clientId];
+	else
+		sock = bss.socket_fs[client_num(pClient)];
 	
 	CHECK_ERROR(sock == -1);
 	

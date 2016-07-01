@@ -36,27 +36,27 @@ DECL(int, FSAShutdown, void) {
 DECL(int, FSAAddClient, void *r3) {
 	int res = real_FSAAddClient(r3);
 	
-	/*if ((int)bss_ptr != 0x0a000000 && res < MAX_CLIENT && res >= 0) {
-		log_printf("FSAAddClient - cafiine_connect\n");
-		cafiine_connect(r3);
-	}*/
+	if ((int)bss_ptr != 0x0a000000 && res < MAX_CLIENT && res >= 0) {
+		cafiine_connect((void*)0, res, 1);
+	}
 	
 	return res;
 }
+
 DECL(int, FSADelClient, int client) {
-	/*if ((int)bss_ptr != 0x0a000000 && client < MAX_CLIENT && client >= 0) {
-		log_printf("FSADelClient - cafiine_disconnect");
-		cafiine_disconnect(bss.socket_fsa[client]);
-	}*/
+	if ((int)bss_ptr != 0x0a000000 && client < MAX_CLIENT && client >= 0) {
+		cafiine_disconnect((void*)0, client, 1);
+	}
 	
 	return real_FSADelClient(client);
 }
+
 DECL(int, FSAOpenFile, int client, const char *path, const char *mode, int *handle) {
-	/*if ((int)bss_ptr != 0x0a000000 && client < MAX_CLIENT && client >= 0) {
+	if ((int)bss_ptr != 0x0a000000 && client < MAX_CLIENT && client >= 0) {
 		int ret;
-		if (cafiine_fopen(bss.socket_fsa[client], &ret, path, mode, handle) == 0)
+		if (cafiine_fopen((void*)0, client, &ret, path, mode, handle, 1) == 0)
 			return ret;
-	}*/
+	}
 	
 	return real_FSAOpenFile(client, path, mode, handle);
 }
@@ -67,35 +67,40 @@ DECL(int, FSInit, void) {
 	}
 	return real_FSInit();
 }
+
 DECL(int, FSShutdown, void) {
 	return real_FSShutdown();
 }
+
 DECL(int, FSAddClientEx, void *r3, void *r4, void *r5) {
 	int res = real_FSAddClientEx(r3, r4, r5);
 	
 	if ((int)bss_ptr != 0x0a000000 && res >= 0) {
-		cafiine_connect(r3);
+		cafiine_connect(r3, 0, 0);
 	}
 	
 	return res;
 }
+
 DECL(int, FSDelClient, void *pClient) {
 	if ((int)bss_ptr != 0x0a000000) {
-		cafiine_disconnect(pClient);
+		cafiine_disconnect(pClient, 0, 0);
 	}
 	
 	return real_FSDelClient(pClient);
 }
+
 DECL(int, FSOpenFile, void *pClient, void *pCmd, const char *path, const char *mode, int *handle, int error) {
 	if ((int)bss_ptr != 0x0a000000) {
 		int ret;
-		if (cafiine_fopen(pClient, &ret, path, mode, handle) == 0) {
+		if (cafiine_fopen(pClient, 0, &ret, path, mode, handle, 0) == 0) {
 			return ret;
 		}
 	}
 	
 	return real_FSOpenFile(pClient, pCmd, path, mode, handle, error);
 }
+
 DECL(int, FSReadFile, void *pClient, void *pCmd, void *buffer, int size, int count, int fd, int flag, int error) {
 	//log_printf("FSReadFile: %i, %i, %i, %i\n", size, count, fd, flag);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
@@ -107,6 +112,7 @@ DECL(int, FSReadFile, void *pClient, void *pCmd, void *buffer, int size, int cou
 	
 	return real_FSReadFile(pClient, pCmd, buffer, size, count, fd, flag, error);
 }
+
 DECL(int, FSReadFileWithPos, void *pClient, void *pCmd, void *buffer, int size, int count, int pos, int fd, int flag, int error) {
 	//log_printf("FSReadFileWithPos: %i, %i, %i, %i, %i\n", size, count, pos, fd, flag);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
