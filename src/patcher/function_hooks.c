@@ -102,7 +102,6 @@ DECL(int, FSOpenFile, void *pClient, void *pCmd, const char *path, const char *m
 }
 
 DECL(int, FSReadFile, void *pClient, void *pCmd, void *buffer, int size, int count, int fd, int flag, int error) {
-	//log_printf("FSReadFile: %i, %i, %i, %i\n", size, count, fd, flag);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_fread(pClient, &ret, buffer, size, count, fd) == 0) {
@@ -114,7 +113,6 @@ DECL(int, FSReadFile, void *pClient, void *pCmd, void *buffer, int size, int cou
 }
 
 DECL(int, FSReadFileWithPos, void *pClient, void *pCmd, void *buffer, int size, int count, int pos, int fd, int flag, int error) {
-	//log_printf("FSReadFileWithPos: %i, %i, %i, %i, %i\n", size, count, pos, fd, flag);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_fsetpos(pClient, &ret, fd, pos) == 0) {
@@ -126,8 +124,8 @@ DECL(int, FSReadFileWithPos, void *pClient, void *pCmd, void *buffer, int size, 
 	
 	return real_FSReadFileWithPos(pClient, pCmd, buffer, size, count, pos, fd, flag, error);
 }
+
 DECL(int, FSCloseFile, void *pClient, void *pCmd, int fd, int error) {
-	//log_printf("FSCloseFile: %i\n", fd);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_fclose(pClient, &ret, fd) == 0) {
@@ -137,8 +135,8 @@ DECL(int, FSCloseFile, void *pClient, void *pCmd, int fd, int error) {
 	
 	return real_FSCloseFile(pClient, pCmd, fd, error);
 }
+
 DECL(int, FSSetPosFile, void *pClient, void *pCmd, int fd, int pos, int error) {
-	//log_printf("FSSetPosFile: %i\n, %i", fd, pos);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_fsetpos(pClient, &ret, fd, pos) == 0) {
@@ -149,8 +147,8 @@ DECL(int, FSSetPosFile, void *pClient, void *pCmd, int fd, int pos, int error) {
 	
 	return real_FSSetPosFile(pClient, pCmd, fd, pos, error);
 }
+
 DECL(int, FSGetPosFile, void *pClient, void *pCmd, int fd, int *pos, int error) {
-	//log_printf("FSGetPosFile: %s\n", fd);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_fgetpos(pClient, &ret, fd, pos) == 0) {
@@ -160,8 +158,8 @@ DECL(int, FSGetPosFile, void *pClient, void *pCmd, int fd, int *pos, int error) 
 	
 	return real_FSGetPosFile(pClient, pCmd, fd, pos, error);
 }
+
 DECL(int, FSGetStatFile, void *pClient, void *pCmd, int fd, void *buffer, int error) {
-	//log_printf("FSGetStatFile: %i\n", fd);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_fstat(pClient, &ret, fd, buffer) == 0) {
@@ -171,8 +169,8 @@ DECL(int, FSGetStatFile, void *pClient, void *pCmd, int fd, void *buffer, int er
 	
 	return real_FSGetStatFile(pClient, pCmd, fd, buffer, error);
 }
+
 DECL(int, FSIsEof, void *pClient, void *pCmd, int fd, int error) {
-	//log_printf("FSIsEof: %i\n", fd);
 	if ((int)bss_ptr != 0x0a000000 && ((fd & MASK_FD) == MASK_FD)) {
 		int ret;
 		if (cafiine_feof(pClient, &ret, fd) == 0) {
@@ -182,6 +180,7 @@ DECL(int, FSIsEof, void *pClient, void *pCmd, int fd, int error) {
 	
 	return real_FSIsEof(pClient, pCmd, fd, error);
 }
+
 /* *****************************************************************************
  * Creates function pointer array
  * ****************************************************************************/

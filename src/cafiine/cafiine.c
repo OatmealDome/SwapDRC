@@ -136,17 +136,6 @@ error:
 	return;
 }
 
-/*void cafiine_disconnect(int clientId) {
-	int sock = bss.socket_fs[clientId];
-	
-	CHECK_ERROR(sock == -1);
-	socketclose(sock);
-	
-	client_num_free(clientId);
-error:
-	return;
-}*/
-
 int cafiine_handshake(int sock) {
 	int ret;
 	unsigned char buffer[16];
