@@ -1,9 +1,11 @@
 #include <malloc.h>
 #include <string.h>
 #include "cafiine.h"
+#include "dynamic_libs/os_functions.h"
 #include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/socket_functions.h"
 #include "kernel/kernel_functions.h"
+#include "common/common.h"
 #include "utils/logger.h"
 
 static int recvwait(int sock, void *buffer, int len) {
@@ -149,8 +151,20 @@ int cafiine_handshake(int sock) {
 	int ret;
 	unsigned char buffer[16];
 	
-	// 0x10013C10 = title id on 5.5.x
-	memcpy(buffer, (void*)0x10013C10, 16);
+	void* title_id = (void*)0x0;
+	if (OS_FIRMWARE == 550) {
+		title_id = (void*)0x10013C10;
+	} else if (OS_FIRMWARE < 550 && OS_FIRMWARE >= 532) {
+		title_id = (void*)0x100136D0;
+	} else if (OS_FIRMWARE < 532 && OS_FIRMWARE >= 500) {
+		title_id = (void*)0x10013010;
+	} else if (OS_FIRMWARE == 410) {
+		title_id = (void*)0x1000ECB0;
+	} else {
+		OSFatal("Sorry, this firmware version is unsupported.");
+	}
+	
+	memcpy(buffer, title_id, 16);
 	
 	ret = sendwait(sock, buffer, sizeof(buffer));
 	CHECK_ERROR(ret < 0);
