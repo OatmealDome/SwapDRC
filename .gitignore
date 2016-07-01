@@ -1,0 +1,5 @@
+# Build directory
+build/
+
+# ELF files
+*.elf
