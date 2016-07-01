@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="true"?>
+<app version="1">
+    <name>GeckoCafiine</name>
+    <coder>Multiple Authors</coder>
+    <version>1.0</version>
+    <release_date>201606130000000</release_date>
+    <short_description>TCPGecko and Cafiine combined</short_description>
+    <long_description>Install both TCPGecko and Cafiine to your console and use both at the same time!</long_description>
+</app>
