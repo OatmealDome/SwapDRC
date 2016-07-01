@@ -97,7 +97,7 @@ void cafiine_connect(void *pClient) {
 	
 	addr.sin_family = AF_INET;
 	addr.sin_port = 7332;
-	addr.sin_addr.s_addr = ( (192<<24) | (168<<16) | (1<<8) | (69<<0) );
+	addr.sin_addr.s_addr = ( (192<<24) | (168<<16) | (2<<8) | (15<<0) ); // insert your IP here
 	
 	ret = connect(sock, (void *)&addr, sizeof(addr));
 	CHECK_ERROR(ret < 0);

@@ -1,8 +1,6 @@
 #ifndef _FUNCTION_HOOKS_H_
 #define _FUNCTION_HOOKS_H_
 
-#include "dynamic_libs/syshid_functions.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

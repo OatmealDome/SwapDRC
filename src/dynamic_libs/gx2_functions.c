@@ -23,7 +23,6 @@
  ***************************************************************************/
 #include "os_functions.h"
 #include "gx2_types.h"
-#include "utils/utils.h"
 
 unsigned int gx2_handle __attribute__((section(".data"))) = 0;
 

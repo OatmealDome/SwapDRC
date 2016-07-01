@@ -4,25 +4,12 @@
 #include "common/common.h"
 #include "common/fs_defs.h"
 #include "common/loader_defs.h"
-#include "controller_patcher/cp_retain_vars.h"
-#include "game/rpx_rpl_table.h"
-#include "dynamic_libs/aoc_functions.h"
-#include "dynamic_libs/ax_functions.h"
 #include "dynamic_libs/fs_functions.h"
-#include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/os_functions.h"
-#include "dynamic_libs/padscore_functions.h"
-#include "dynamic_libs/socket_functions.h"
 #include "dynamic_libs/sys_functions.h"
-#include "dynamic_libs/vpad_functions.h"
-#include "dynamic_libs/acp_functions.h"
-#include "dynamic_libs/syshid_functions.h"
 #include "kernel/kernel_functions.h"
-#include "system/exception_handler.h"
 #include "function_hooks.h"
-#include "fs/fs_utils.h"
 #include "utils/logger.h"
-#include "system/memory.h"
 #include "cafiine/cafiine.h"
 
 #define LIB_CODE_RW_BASE_OFFSET                         0xC1000000
@@ -395,75 +382,10 @@ unsigned int GetAddressOfFunction(const char * functionName,unsigned int library
     unsigned int real_addr = 0;
 
     unsigned int rpl_handle = 0;
-    if(library == LIB_CORE_INIT){
-        log_printf("FindExport of %s! From LIB_CORE_INIT\n", functionName);
-        if(coreinit_handle == 0){log_print("LIB_CORE_INIT not aquired\n"); return 0;}
-        rpl_handle = coreinit_handle;
-    }
-    else if(library == LIB_NSYSNET){
-        log_printf("FindExport of %s! From LIB_NSYSNET\n", functionName);
-        if(nsysnet_handle == 0){log_print("LIB_NSYSNET not aquired\n"); return 0;}
-        rpl_handle = nsysnet_handle;
-    }
-    else if(library == LIB_GX2){
-        log_printf("FindExport of %s! From LIB_GX2\n", functionName);
-        if(gx2_handle == 0){log_print("LIB_GX2 not aquired\n"); return 0;}
-        rpl_handle = gx2_handle;
-    }
-    else if(library == LIB_AOC){
-        log_printf("FindExport of %s! From LIB_AOC\n", functionName);
-        if(aoc_handle == 0){log_print("LIB_AOC not aquired\n"); return 0;}
-        rpl_handle = aoc_handle;
-    }
-    else if(library == LIB_AX){
-        log_printf("FindExport of %s! From LIB_AX\n", functionName);
-        if(sound_handle == 0){log_print("LIB_AX not aquired\n"); return 0;}
-        rpl_handle = sound_handle;
-    }
-    else if(library == LIB_FS){
+    if(library == LIB_FS){
         log_printf("FindExport of %s! From LIB_FS\n", functionName);
         if(coreinit_handle == 0){log_print("LIB_FS not aquired\n"); return 0;}
         rpl_handle = coreinit_handle;
-    }
-    else if(library == LIB_OS){
-        log_printf("FindExport of %s! From LIB_OS\n", functionName);
-        if(coreinit_handle == 0){log_print("LIB_OS not aquired\n"); return 0;}
-        rpl_handle = coreinit_handle;
-    }
-    else if(library == LIB_PADSCORE){
-        log_printf("FindExport of %s! From LIB_PADSCORE\n", functionName);
-        if(padscore_handle == 0){log_print("LIB_PADSCORE not aquired\n"); return 0;}
-        rpl_handle = padscore_handle;
-    }
-    else if(library == LIB_SOCKET){
-        log_printf("FindExport of %s! From LIB_SOCKET\n", functionName);
-        if(nsysnet_handle == 0){log_print("LIB_SOCKET not aquired\n"); return 0;}
-        rpl_handle = nsysnet_handle;
-    }
-    else if(library == LIB_SYS){
-        log_printf("FindExport of %s! From LIB_SYS\n", functionName);
-        if(sysapp_handle == 0){log_print("LIB_SYS not aquired\n"); return 0;}
-        rpl_handle = sysapp_handle;
-    }
-    else if(library == LIB_VPAD){
-        log_printf("FindExport of %s! From LIB_VPAD\n", functionName);
-        if(vpad_handle == 0){log_print("LIB_VPAD not aquired\n"); return 0;}
-        rpl_handle = vpad_handle;
-    }
-    else if(library == LIB_NN_ACP){
-        log_printf("FindExport of %s! From LIB_NN_ACP\n", functionName);
-        if(acp_handle == 0){log_print("LIB_NN_ACP not aquired\n"); return 0;}
-        rpl_handle = acp_handle;
-    }
-    else if(library == LIB_SYSHID){
-        log_printf("FindExport of %s! From LIB_SYSHID\n", functionName);
-        if(syshid_handle == 0){log_print("LIB_SYSHID not aquired\n"); return 0;}
-        rpl_handle = syshid_handle;
-    }
-    else if(library == LIB_VPADBASE){
-        log_printf("FindExport of %s! From LIB_VPADBASE\n", functionName);
-        if(vpadbase_handle == 0){log_print("LIB_VPADBASE not aquired\n"); return 0;}
-        rpl_handle = vpadbase_handle;
     }
 
     if(!rpl_handle){

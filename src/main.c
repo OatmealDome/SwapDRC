@@ -4,22 +4,14 @@
 #include <stdio.h>
 #include <malloc.h>
 #include "dynamic_libs/os_functions.h"
-#include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/gx2_functions.h"
-#include "dynamic_libs/syshid_functions.h"
-#include "dynamic_libs/vpad_functions.h"
 #include "dynamic_libs/socket_functions.h"
 #include "dynamic_libs/sys_functions.h"
-#include "system/memory.h"
+#include "dynamic_libs/fs_functions.h"
 #include "utils/logger.h"
 #include "common/common.h"
-#include "game/rpx_rpl_table.h"
-#include "game/memory_area_table.h"
-#include "start.h"
 #include "patcher/function_hooks.h"
 #include "kernel/kernel_functions.h"
-#include "system/exception_handler.h"
-#include "controller_patcher/controller_patcher.h"
 #include "gecko/pygecko.h"
 #include "cafiine/cafiine.h"
 
@@ -37,7 +29,6 @@ int Menu_Main(void)
     InitGX2FunctionPointers();
     InitSysFunctionPointers();
 	InitFSFunctionPointers();
-	InitVPadFunctionPointers();
 
     log_init("192.168.2.15");
 
