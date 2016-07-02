@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="true"?>
 <app version="1">
-    <name>GeckoCafiine</name>
-    <coder>Multiple Authors</coder>
-    <version>1.0</version>
-    <release_date>201606130000000</release_date>
+    <name>geckiine</name>
+    <coder>multiple people</coder>
+    <version> 1.0</version>
+    <release_date>201607020000000</release_date>
     <short_description>TCPGecko and Cafiine combined</short_description>
-    <long_description>Install both TCPGecko and Cafiine to your console and use both at the same time!</long_description>
+	<long_description>This tool installs both TCPGecko and Cafiine into system memory so that you can use them at the same time.
+		
+		Special thanks to: Maschell, dimok, NWPlayer123, amibu, seresaa, and /u/MachMatic!
+		
+		Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered.</long_description>
 </app>
