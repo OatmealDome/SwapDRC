@@ -1,20 +1,31 @@
-# Geckiine: Overdose Edition
+# geckiine
 
 This tool installs both TCPGecko and Cafiine into the system memory so that you can use them at the same time.
 
-# Usage
+## Usage
 
-## Prerequisites
-* Wii U
+### Prerequisites
+* Wii U (on firmware version 4.1.0 or higher)
 * Homebrew Launcher
+* Your computer's local IP ([Windows](https://support.microsoft.com/en-us/help/15291/windows-find-pc-ip-address), [macOS](http://osxdaily.com/2010/11/21/find-ip-address-mac/))
 
-## Instructions
-Coming soon, please wait!
+### Instructions
+1. Go to [466gaming.ga/geckiine](http://466gaming.ga/geckiine) and enter in your IP address.
+2. Click the download button and extract the ZIP file.
+3. Copy the "geckiine" folder to the ```wiiu/apps/``` folder on your SD card.
+4. Insert your SD card into the Wii U and launch the Homebrew Launcher from [loadiine.ovh](http://loadiine.ovh).
+5. Start a cafiine server on your computer.
+6. Scroll to the "geckiine" application and press A to start it. You will be returned to the Wii U menu.
+7. Launch the game you want to modify.
+8. Run any TCPGecko scripts and/or connect with TCPGecko dotNET/JGeckoU.
 
-# Credits
+## Credits
 
-* Maschell for [HID to VPAD](https://github.com/Maschell/hid_to_vpad) which I used as a base for this application
+* Maschell for HID to VPad
 * Dimok for his amazing function_hooks system and pygecko server
-* NWPlayer123 for the [cafiine client source code](https://github.com/NWPlayer123/Cafiine-5.5.X), because this would have been harder for me to complete without it
-* amiibu and seresaa for giving me name ideas
-* Shoutouts to the people over at the Splatoon Modding Hub Discord, because I probably annoyed them by talking about the various problems I encountered.
+* NWPlayer123 for the cafiine cient source code
+* amiibu for helping me with the PHP script and giving me name ideas
+* seresaa for putting together the banner and for name ideas as well
+* /u/MachMatic for creating the banner background
+
+Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered.
