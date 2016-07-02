@@ -7,6 +7,7 @@ This tool installs both TCPGecko and Cafiine into the system memory so that you 
 ### Prerequisites
 * Wii U (on firmware version 4.1.0 or higher)
 * Homebrew Launcher
+* a cafiine server (ex the original by MrRean, [MusicRandomizer](https://github.com/OatmealDome/SplatoonUtilities/blob/master/MusicRandomizer/README.md), [Ray's custom server](https://github.com/Syroot/CafiineServer), etc)
 * Your computer's local IP ([Windows](https://support.microsoft.com/en-us/help/15291/windows-find-pc-ip-address), [macOS](http://osxdaily.com/2010/11/21/find-ip-address-mac/))
 
 ### Instructions
