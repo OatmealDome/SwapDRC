@@ -27,6 +27,7 @@ This tool installs both TCPGecko and Cafiine into the system memory so that you 
 * NWPlayer123 for the cafiine cient source code
 * amiibu for helping me with the PHP script and giving me name ideas
 * seresaa for putting together the banner and for name ideas as well
+* 466 for web hosting
 * /u/MachMatic for creating the banner background
 
 Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered.
