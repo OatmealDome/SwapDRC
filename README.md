@@ -34,4 +34,4 @@ Load the app with the Homebrew Launcher.
 * /u/MachMatic for creating the banner background
 * brienj for adding the IP selector
 
-OatmealDome gives shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered.
+OatmealDome says, "Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered."
