@@ -2,6 +2,7 @@
 <app version="1.1">
     <name>geckiine</name>
     <coder>multiple people</coder>
+	<url>https://github.com/xhp-creations/Geckiine</url>
     <version> 1.1</version>
     <release_date>201607080000000</release_date>
     <short_description>TCPGecko and Cafiine combined</short_description>
