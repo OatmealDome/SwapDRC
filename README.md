@@ -2,7 +2,7 @@
 
 This tool installs both TCPGecko and Cafiine into the system memory so that you can use them at the same time.
 
-It was originally written by OatmealDome and modified by me with a selectable IP address menu added.  Releasing under the GPL the original source code was made under.
+It was originally written by OatmealDome and modified by me with a selectable IP address menu added.  Releasing under the GPL the original source code was made under.  The original source code can be found here - https://github.com/OatmealDome/Geckiine
 
 ## Usage
 
