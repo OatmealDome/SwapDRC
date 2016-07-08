@@ -11,6 +11,7 @@ extern "C" {
 
 //! C wrapper for our C++ functions
 int Menu_Main(void);
+void clearScreen(void);
 
 #ifdef __cplusplus
 }

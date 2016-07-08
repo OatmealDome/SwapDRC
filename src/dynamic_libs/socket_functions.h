@@ -62,6 +62,7 @@ extern unsigned int nsysnet_handle;
 struct in_addr {
     unsigned int s_addr;
 };
+
 struct sockaddr_in {
     short sin_family;
     unsigned short sin_port;
@@ -75,6 +76,7 @@ struct sockaddr
    char sa_data[14];
 };
 
+unsigned int new_addr;
 
 void InitSocketFunctionPointers(void);
 void InitAcquireSocket(void);
