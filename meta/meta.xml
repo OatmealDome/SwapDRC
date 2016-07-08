@@ -2,7 +2,7 @@
 <app version="1.1">
     <name>geckiine</name>
     <coder>multiple people</coder>
-    <version> 1.0</version>
+    <version> 1.1</version>
     <release_date>201607080000000</release_date>
     <short_description>TCPGecko and Cafiine combined</short_description>
 	<long_description>This tool installs both TCPGecko and Cafiine into system memory so that you can use them at the same time.
