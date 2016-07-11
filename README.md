@@ -2,6 +2,8 @@
 
 This tool installs both TCPGecko and Cafiine into the system memory so that you can use them at the same time.
 
+It was originally written by OatmealDome and modified by me with a selectable IP address menu added.  Releasing under the GPL the original source code was made under.  The original source code can be found here - https://github.com/OatmealDome/Geckiine
+
 ## Usage
 
 ### Prerequisites
@@ -12,29 +14,24 @@ This tool installs both TCPGecko and Cafiine into the system memory so that you 
 
 ### Instructions
 
-Note: It is highly recommended that you set a static IP for your computer when using geckiine. For more information, click [here](https://github.com/OatmealDome/SplatoonUtilities/blob/master/Misc/StaticIPGuide.md).
+Load the app with the Homebrew Launcher.
 
-0. Find your computer's local IP address. If you set a static IP because of the above recommendation, that static IP is your computer's local IP address.)
-1. There are two possible ways to get a geckiine.elf file with your IP address.
-
-   a. Go to [466gaming.ga/geckiine](http://466gaming.ga/geckiine) and enter in your IP address. Click the download button and extract the ZIP file.
-
-   b. Download ```geckiine.zip``` with Geckiine Creator from [here](https://github.com/seresaa/geckiine-creator/releases/tag/v0.1) and extract it. Run ```Geckiine Creator.exe```, enter in your IP address into the four boxes, and click the "Create/Patch ELF" button.
-3. Copy the ```geckiine``` folder to the ```wiiu/apps/``` folder on your SD card.
-4. Insert your SD card into the Wii U and launch the Homebrew Launcher from [loadiine.ovh](http://loadiine.ovh).
-5. Start a cafiine server on your computer.
-6. Scroll to the "geckiine" application, tap on it, and tap the "Start" button. You will be returned to the Wii U menu.
-7. Launch the game you want to modify.
-8. Run any TCPGecko scripts and/or connect with TCPGecko dotNET/JGeckoU.
+1. Change the IP address using the D-PAD
+2. Next press the A button with the correct IP for your PC selected and the cafiine server running on your PC
+3. To take geckiine out of memory, reload HBL in browser
+4. After reloading HBL, geckiine will be gone
+5. If loading HBL fails, just reload the kernel
 
 ## Credits
 
+* OatmealDome for the original source code
 * Maschell for HID to VPad
 * Dimok for his amazing function_hooks system and pygecko server
 * NWPlayer123 for the cafiine cient source code
-* amiibu for helping me with the PHP script and giving me name ideas
+* amiibu for helping OatmealDome with the PHP script and giving OatmealDome name ideas
 * seresaa for putting together the banner, for name ideas, and for writing Geckiine Creator
 * 466 for web hosting
 * /u/MachMatic for creating the banner background
+* brienj for adding the IP selector
 
-Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered.
+OatmealDome says, "Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered."
