@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <malloc.h>
+#include "main.h"
 #include "dynamic_libs/os_functions.h"
 #include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/socket_functions.h"
@@ -18,7 +19,6 @@
 
 #define PRINT_TEXT1(x, y, str) { OSScreenPutFontEx(1, x, y, str); }
 #define PRINT_TEXT2(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
-#define BTN_PRESSED (BUTTON_LEFT | BUTTON_RIGHT | BUTTON_UP | BUTTON_DOWN | BUTTON_A | BUTTON_B)
 
 /* IP union */
 typedef union u_serv_ip
@@ -28,7 +28,6 @@ typedef union u_serv_ip
 } u_serv_ip;
 
 static unsigned int patched = 0;
-static uint32_t persistent_ip = 0xC0A80140;
 
 /* Entry point */
 int Menu_Main()
@@ -48,7 +47,7 @@ int Menu_Main()
 	
 	SetupKernelCallback();
 	
-	log_printf("Geckiine started (rpx =  %s)\n", cosAppXmlInfoStruct.rpx_name);
+	log_printf("Geckiine started (rpx = '%s')\n", cosAppXmlInfoStruct.rpx_name);
 	
 	//!*******************************************************************
 	//!                    Initialize BSS sections                       *
@@ -63,123 +62,152 @@ int Menu_Main()
 				 "bl memset\n"
 				 );
 	
-	if (patched)
+	PatchMethodHooks();
+	
+	if (strcasecmp("men.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
 	{
-		log_printf("Starting the TCPGecko server.\n");
-		start_pygecko();
+		log_printf("Wii U menu started, exiting.\n");
+		
+		log_deinit();
+		return EXIT_RELAUNCH_ON_LOAD;
 	}
 	
-	if (patched == 0)
+	if (strlen(cosAppXmlInfoStruct.rpx_name) == 0)
+	{
+		log_printf("Returning to the Wii U menu.\n");
+		
+		SYSLaunchMenu();
+		
+		log_deinit();
+		return EXIT_RELAUNCH_ON_LOAD;
+	}
+	
+	log_printf("Starting the TCPGecko server.\n");
+	start_pygecko();
+	
+	if (!patched)
 	{
 		// Prepare screen
 		int screen_buf0_size = 0;
-		int screen_buf1_size = 0;
 		char msg[80];
 		
 		// Init screen and screen buffers
 		OSScreenInit();
 		screen_buf0_size = OSScreenGetBufferSizeEx(0);
-		screen_buf1_size = OSScreenGetBufferSizeEx(1);
 		OSScreenSetBufferEx(0, (void *)0xF4000000);
 		OSScreenSetBufferEx(1, (void *)0xF4000000 + screen_buf0_size);
 		
 		OSScreenEnableEx(0, 1);
 		OSScreenEnableEx(1, 1);
 		
-		void clearScreen();
-		
-		// Set server ip with buttons
-		int error;
+		// Render IP selector and check for buttons
 		u_serv_ip ip;
-		ip.full = persistent_ip;
-		uint8_t sel_ip = 3;
-		uint8_t button_pressed = 1;
-		uint8_t first_pass = 1;
-		int use_fs_logs = 0;
+		ip.full = ( (192<<24) | (168<<16) | (2<<8) | (15<<0) );
 		VPADData vpad_data;
-		VPADRead(0, &vpad_data, 1, &error); //Read initial vpad status
+		int error;
+		int delay = 0;
+		int gui_mode = 0;
+		int sel_ip = 3;
+		
 		while (1)
 		{
-			// Refresh screen if needed
-			if (button_pressed) { OSScreenFlipBuffersEx(1); OSScreenClearBufferEx(1, 0); }
+			// Refresh GamePad screen
+			OSScreenFlipBuffersEx(1);
+			OSScreenClearBufferEx(1, 0);
 			
 			// Read vpad
 			VPADRead(0, &vpad_data, 1, &error);
 			
 			// Title
 			PRINT_TEXT1(23, 1, "-- geckiine --");
-			PRINT_TEXT1(23, 2, "by OatmealDome");
 			
-			// Displays the current page
-			PRINT_TEXT2(3, 5,  "1. IP : %3d.%3d.%3d.%3d  (Use D-PAD to change IP selection)", ip.digit[0], ip.digit[1], ip.digit[2], ip.digit[3]);
-			PRINT_TEXT1(3, 6,  "2. Press A with Cafiine server running on above IP");
-			PRINT_TEXT1(3, 7,  "3. To take out of memory, reload HBL in browser");
-			PRINT_TEXT1(3, 8,  "4. After reloading HBL, geckiine will be gone");
-			PRINT_TEXT1(3, 9,  "5. If loading HBL fails, just reload kernel");
-			
-			PRINT_TEXT1(11 + 4 * sel_ip, 4, "vvv");
-			
-			// Check buttons
-			if (!button_pressed)
+			if (gui_mode == 0) // IP selector
 			{
-				// A Button
-				if (vpad_data.btn_hold & BUTTON_A)
-				{
-					// Set wait message
-					OSScreenClearBufferEx(1, 0);
-					PRINT_TEXT1(27, 8, "Wait ...");
-					OSScreenFlipBuffersEx(1);
-					break;
-				}
+				PRINT_TEXT2(3, 4,  "   IP : %3d.%3d.%3d.%3d", ip.digit[0], ip.digit[1], ip.digit[2], ip.digit[3]);
+				PRINT_TEXT1(3, 6,  "Use the D-Pad to enter in your computer's IP address,");
+				PRINT_TEXT1(3, 7,  "then press A to install geckiine.");
+				PRINT_TEXT1(3, 10, "Press X for credits.");
 				
-				// Left/Right Buttons
-				if (vpad_data.btn_hold & BUTTON_LEFT ) sel_ip = !sel_ip ? sel_ip = 3 : --sel_ip;
-				if (vpad_data.btn_hold & BUTTON_RIGHT) sel_ip = ++sel_ip % 4;
-				
-				// Up/Down Buttons
-				if (vpad_data.btn_hold & BUTTON_UP  ) ip.digit[sel_ip] = ++ip.digit[sel_ip];
-				if (vpad_data.btn_hold & BUTTON_DOWN) ip.digit[sel_ip] = --ip.digit[sel_ip];
+				PRINT_TEXT1(11 + 4 * sel_ip, 3, "vvv");
+
+			}
+			else if (gui_mode == 1) // Credits
+			{
+				PRINT_TEXT1(3, 4, "* Maschell for HID to VPAD");
+				PRINT_TEXT1(3, 5, "* Dimok for function_hooks and the pygecko server");
+				PRINT_TEXT1(3, 6, "* brienj for the IP selector and initial UI");
+				PRINT_TEXT1(3, 7, "* amiibu for help with the PHP downloader script");
+				PRINT_TEXT1(3, 8, "* seresaa for the banner and Geckiine Creator");
+				PRINT_TEXT1(3, 9, "* 466 for web hosting");
+				PRINT_TEXT1(3, 10, "* /u/MachMatic for the banner background");
+				PRINT_TEXT1(3, 13, "Press X to return to the IP selector.");
 			}
 			
-			// Print coffee and exit msg
-			PRINT_TEXT1(0, 12, "    )))");
-			PRINT_TEXT1(0, 13, "    (((");
-			PRINT_TEXT1(0, 14, "  +-----+");
-			PRINT_TEXT1(0, 15, "  | XHP |]");
-			PRINT_TEXT1(0, 16, "  `-----\'");
-			PRINT_TEXT1(25, 16, "geckiine IP selection added by brienj");
-			
-			// Update screen
-			if (first_pass) { OSScreenFlipBuffersEx(1); OSScreenClearBufferEx(1, 0); first_pass = 0; }
-			
-			// Button pressed ?
-			button_pressed = (vpad_data.btn_hold & BTN_PRESSED) ? 1 : 0;
+			if ((vpad_data.btn_hold & BUTTON_A) && gui_mode == 0)
+			{
+				// Set wait message
+				OSScreenClearBufferEx(1, 0);
+				PRINT_TEXT1(43, 17, "Installing geckiine...");
+				OSScreenFlipBuffersEx(1);
+				break;
+			}
+			else if (vpad_data.btn_hold & BUTTON_X)
+			{
+				if (--delay <= 0)
+				{
+					// Swap GUI mode
+					gui_mode = (gui_mode == 0) ? 1 : 0;
+					delay = 100;
+				}
+			}
+			else if ((vpad_data.btn_hold & BUTTON_LEFT) && gui_mode == 0)
+			{
+				if (--delay <= 0)
+				{
+					if (sel_ip == 0)
+						sel_ip = 3;
+					else
+						sel_ip--;
+					
+					delay = 12;
+				}
+			}
+			else if ((vpad_data.btn_hold & BUTTON_RIGHT) && gui_mode == 0)
+			{
+				if (--delay <= 0)
+				{
+					sel_ip++;
+					sel_ip = sel_ip % 4;
+					delay = 12;
+				}
+			}
+			else if ((vpad_data.btn_hold & BUTTON_UP) && gui_mode == 0)
+			{
+				if (--delay <= 0)
+				{
+					ip.digit[sel_ip]++;
+					delay = 12;
+				}
+			}
+			else if ((vpad_data.btn_hold & BUTTON_DOWN) && gui_mode == 0)
+			{
+				if (--delay <= 0)
+				{
+					ip.digit[sel_ip]--;
+					delay = 12;
+				}
+			}
+			else
+			{
+				delay = 0;
+			}
 		}
 		
-		persistent_ip = ip.full;
-		new_addr = ip.full;
-		
-		log_printf("Starting the TCPGecko server.\n");
-		start_pygecko();
 		patched = 1;
+		new_addr = ip.full;
 	}
 	
-	if(strcasecmp("men.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
-	{
-		log_deinit();
-		return EXIT_RELAUNCH_ON_LOAD;
-	}
-	else if(strlen(cosAppXmlInfoStruct.rpx_name) > 0 && strcasecmp("ffl_app.rpx", cosAppXmlInfoStruct.rpx_name) != 0)
-	{
-		log_deinit();
-		return EXIT_RELAUNCH_ON_LOAD;
-	}
-	
-	PatchMethodHooks();
-	
-	log_printf("Returning to the Wii U menu.\n");
-	SYSLaunchMenu();
-	
+	log_printf("Returning to application.\n");
 	log_deinit();
 	
 	return EXIT_RELAUNCH_ON_LOAD;
@@ -189,7 +217,7 @@ int Menu_Main()
 void clearScreen()
 {
 	int i;
-	for( i = 0; i < 2; i++ )
+	for (i = 0; i < 2; i++)
 	{
 		int screen_buf0_size = OSScreenGetBufferSizeEx(0);
 		int screen_buf1_size = OSScreenGetBufferSizeEx(1);

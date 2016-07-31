@@ -1,5 +1,6 @@
 #include <malloc.h>
 #include <string.h>
+#include "main.h"
 #include "cafiine.h"
 #include "dynamic_libs/os_functions.h"
 #include "dynamic_libs/gx2_functions.h"
