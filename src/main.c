@@ -16,6 +16,7 @@
 #include "kernel/kernel_functions.h"
 #include "gecko/pygecko.h"
 #include "cafiine/cafiine.h"
+#include "retain_vars.h"
 
 #define PRINT_TEXT1(x, y, str) { OSScreenPutFontEx(1, x, y, str); }
 #define PRINT_TEXT2(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
@@ -43,7 +44,7 @@ int Menu_Main()
 	InitFSFunctionPointers();
 	InitVPadFunctionPointers();
 	
-	log_init("192.168.2.15");
+	log_init("192.168.2.18");
 	
 	SetupKernelCallback();
 	
@@ -81,6 +82,13 @@ int Menu_Main()
 		log_deinit();
 		return EXIT_RELAUNCH_ON_LOAD;
 	}
+
+	// Check for Splatoon (Gambit)
+    if (strcasecmp("Gambit.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
+    {
+    	log_printf("Splatoon enhanced swapping enabled.\n");
+        isSplatoon = 1;
+    }
 	
 	log_printf("Starting the TCPGecko server.\n");
 	start_pygecko();
@@ -104,7 +112,7 @@ int Menu_Main()
 		u_serv_ip ip;
 		ip.full = ( (192<<24) | (168<<16) | (2<<8) | (15<<0) );
 		VPADData vpad_data;
-		int error;
+		s32 error;
 		int delay = 0;
 		int gui_mode = 0;
 		int sel_ip = 3;
@@ -143,7 +151,7 @@ int Menu_Main()
 				PRINT_TEXT1(3, 13, "Press X to return to the IP selector.");
 			}
 			
-			if ((vpad_data.btn_hold & BUTTON_A) && gui_mode == 0)
+			if ((vpad_data.btns_h & VPAD_BUTTON_A) && gui_mode == 0)
 			{
 				// Set wait message
 				OSScreenClearBufferEx(1, 0);
@@ -151,7 +159,7 @@ int Menu_Main()
 				OSScreenFlipBuffersEx(1);
 				break;
 			}
-			else if (vpad_data.btn_hold & BUTTON_X)
+			else if (vpad_data.btns_h & VPAD_BUTTON_X)
 			{
 				if (--delay <= 0)
 				{
@@ -160,7 +168,7 @@ int Menu_Main()
 					delay = 100;
 				}
 			}
-			else if ((vpad_data.btn_hold & BUTTON_LEFT) && gui_mode == 0)
+			else if ((vpad_data.btns_h & VPAD_BUTTON_LEFT) && gui_mode == 0)
 			{
 				if (--delay <= 0)
 				{
@@ -172,7 +180,7 @@ int Menu_Main()
 					delay = 12;
 				}
 			}
-			else if ((vpad_data.btn_hold & BUTTON_RIGHT) && gui_mode == 0)
+			else if ((vpad_data.btns_h & VPAD_BUTTON_RIGHT) && gui_mode == 0)
 			{
 				if (--delay <= 0)
 				{
@@ -181,7 +189,7 @@ int Menu_Main()
 					delay = 12;
 				}
 			}
-			else if ((vpad_data.btn_hold & BUTTON_UP) && gui_mode == 0)
+			else if ((vpad_data.btns_h & VPAD_BUTTON_UP) && gui_mode == 0)
 			{
 				if (--delay <= 0)
 				{
@@ -189,7 +197,7 @@ int Menu_Main()
 					delay = 12;
 				}
 			}
-			else if ((vpad_data.btn_hold & BUTTON_DOWN) && gui_mode == 0)
+			else if ((vpad_data.btns_h & VPAD_BUTTON_DOWN) && gui_mode == 0)
 			{
 				if (--delay <= 0)
 				{

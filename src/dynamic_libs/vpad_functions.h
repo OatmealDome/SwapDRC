@@ -28,38 +28,45 @@
 extern "C" {
 #endif
 
+extern unsigned int vpad_handle;
+extern unsigned int vpadbase_handle;
+
 #include <gctypes.h>
 
-#define BUTTON_A        0x8000
-#define BUTTON_B        0x4000
-#define BUTTON_X        0x2000
-#define BUTTON_Y        0x1000
-#define BUTTON_LEFT     0x0800
-#define BUTTON_RIGHT    0x0400
-#define BUTTON_UP       0x0200
-#define BUTTON_DOWN     0x0100
-#define BUTTON_ZL       0x0080
-#define BUTTON_ZR       0x0040
-#define BUTTON_L        0x0020
-#define BUTTON_R        0x0010
-#define BUTTON_PLUS     0x0008
-#define BUTTON_MINUS    0x0004
-#define BUTTON_HOME     0x0002
-#define BUTTON_SYNC     0x0001
-#define BUTTON_STICK_R  0x00020000
-#define BUTTON_STICK_L  0x00040000
-#define BUTTON_TV       0x00010000
+#define VPAD_BUTTON_A        0x8000
+#define VPAD_BUTTON_B        0x4000
+#define VPAD_BUTTON_X        0x2000
+#define VPAD_BUTTON_Y        0x1000
+#define VPAD_BUTTON_LEFT     0x0800
+#define VPAD_BUTTON_RIGHT    0x0400
+#define VPAD_BUTTON_UP       0x0200
+#define VPAD_BUTTON_DOWN     0x0100
+#define VPAD_BUTTON_ZL       0x0080
+#define VPAD_BUTTON_ZR       0x0040
+#define VPAD_BUTTON_L        0x0020
+#define VPAD_BUTTON_R        0x0010
+#define VPAD_BUTTON_PLUS     0x0008
+#define VPAD_BUTTON_MINUS    0x0004
+#define VPAD_BUTTON_HOME     0x0002
+#define VPAD_BUTTON_SYNC     0x0001
+#define VPAD_BUTTON_STICK_R  0x00020000
+#define VPAD_BUTTON_STICK_L  0x00040000
+#define VPAD_BUTTON_TV       0x00010000
 
-#define STICK_R_EMULATION_LEFT    0x04000000
-#define STICK_R_EMULATION_RIGHT   0x02000000
-#define STICK_R_EMULATION_UP      0x01000000
-#define STICK_R_EMULATION_DOWN    0x00800000
+#define VPAD_STICK_R_EMULATION_LEFT     0x04000000
+#define VPAD_STICK_R_EMULATION_RIGHT    0x02000000
+#define VPAD_STICK_R_EMULATION_UP       0x01000000
+#define VPAD_STICK_R_EMULATION_DOWN     0x00800000
 
-#define STICK_L_EMULATION_LEFT    0x40000000
-#define STICK_L_EMULATION_RIGHT   0x20000000
-#define STICK_L_EMULATION_UP      0x10000000
-#define STICK_L_EMULATION_DOWN    0x08000000
+#define VPAD_STICK_L_EMULATION_LEFT     0x40000000
+#define VPAD_STICK_L_EMULATION_RIGHT    0x20000000
+#define VPAD_STICK_L_EMULATION_UP       0x10000000
+#define VPAD_STICK_L_EMULATION_DOWN     0x08000000
 
+//! Own definitions
+#define VPAD_BUTTON_TOUCH               0x00080000
+#define VPAD_MASK_EMULATED_STICKS       0x7F800000
+#define VPAD_MASK_BUTTONS               ~VPAD_MASK_EMULATED_STICKS
 
 typedef struct
 {
@@ -75,7 +82,7 @@ typedef struct
 
 typedef struct
 {
-    u32 btn_hold;                  /* Held buttons */
+    u32 btns_h;                  /* Held buttons */
     u32 btns_d;                  /* Buttons that are pressed at that instant */
     u32 btns_r;                  /* Released buttons */
     Vec2D lstick, rstick;        /* Each contains 4-byte X and Y components */
@@ -91,8 +98,16 @@ typedef struct
 } VPADData;
 
 void InitVPadFunctionPointers(void);
+void InitAcquireVPad(void);
 
-extern void (* VPADRead)(int chan, VPADData *buffer, u32 buffer_size, s32 *error);
+extern int (* VPADRead)(int chan, VPADData *buffer, u32 buffer_size, s32 *error);
+extern int (* VPADGetLcdMode)(int padnum, int *lcdmode);
+extern int (* VPADSetLcdMode)(int padnum, int lcdmode);
+extern void (* VPADInit)(void);
+extern void (* VPADGetTPCalibratedPoint)(int chan, VPADTPData *screen, VPADTPData *raw);
+extern void (* VPADGetTPCalibratedPointEx)(int chan, int resolution, VPADTPData *screen, VPADTPData *raw);
+extern int (* VPADBASEGetMotorOnRemainingCount)(int lcdmode);
+extern int (* VPADBASESetMotorOnRemainingCount)(int lcdmode,int counter);
 
 #ifdef __cplusplus
 }

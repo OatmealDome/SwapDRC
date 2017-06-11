@@ -7,10 +7,13 @@
 #include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/os_functions.h"
 #include "dynamic_libs/sys_functions.h"
+#include "dynamic_libs/gx2_functions.h"
+#include "dynamic_libs/vpad_functions.h"
 #include "kernel/kernel_functions.h"
 #include "function_hooks.h"
 #include "utils/logger.h"
 #include "cafiine/cafiine.h"
+#include "retain_vars.h"
 
 #define LIB_CODE_RW_BASE_OFFSET                         0xC1000000
 #define CODE_RW_BASE_OFFSET                             0x00000000
@@ -181,6 +184,149 @@ DECL(int, FSIsEof, void *pClient, void *pCmd, int fd, int error) {
 	return real_FSIsEof(pClient, pCmd, fd, error);
 }
 
+DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan_target)
+{
+    // GX2 destinations:
+    // 0x1 = TV
+    // 0x4 = 1st GamePad
+
+    // drcMode values:
+    // 0x0 = normal
+    // 0x1 = swap
+
+    if (drcMode == 1)
+    {
+        if (scan_target == 0x1)
+        {
+            real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x4);
+        }
+        else if (scan_target == 0x4)
+        {
+            real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x1);
+        }
+    }
+    else
+    {
+        real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
+    }
+}
+
+DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
+{
+    int ret = real_VPADRead(chan, buffer, buffer_size, error);
+
+    // check if we should use Splatoon mode controls
+    if (isSplatoon)
+    {
+        if (gamemode == (uint32_t*)0)
+        {
+            uint32_t firstBase = *(uint32_t*)0x106A3BA0;
+            if (firstBase > 0x10000000 && firstBase < 0x11000000)
+            {
+                uint32_t secondBase = *(uint32_t*)(firstBase + 0xD074);
+                if (secondBase > 0x12000000 && secondBase < 0x14000000)
+                {
+                    gamemode = (uint32_t*)(secondBase + 0x238);
+                }
+            }
+        }
+        else if (*gamemode != 0xFFFFFFFF)
+        {
+            // switch if B is pressed
+            if (buffer->btns_d & VPAD_BUTTON_B)
+            {
+                drcMode = !drcMode;
+            }
+        }
+        else
+        {
+            // switch on L and SELECT
+            if (buffer->btns_d & VPAD_BUTTON_MINUS)
+            {
+                drcMode = !drcMode;
+            }
+        }
+    }
+    else
+    {
+        // switch on L and SELECT
+        if (buffer->btns_d & VPAD_BUTTON_MINUS)
+        {
+            drcMode = !drcMode;
+        }
+    }
+
+    // disable touchscreen input if the TV is on the DRC
+    if (drcMode == 1)
+    {
+        buffer->tpdata.touched = 0;
+        buffer->tpdata1.touched = 0;
+        buffer->tpdata2.touched = 0;
+    }
+
+    return ret;
+}
+
+DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw)
+{
+    real_VPADGetTPCalibratedPoint(chan, screen, raw);
+    
+    // check for Splatoon
+    if (isSplatoon)
+    {
+        if (screenPressTimeout != 0)
+        {
+            screenPressTimeout--;
+        }
+
+        // disable touchscreen input if the TV is on the DRC
+        if (drcMode == 1 && screenPressTimeout == 0)
+        {
+            screen->touched = 0;
+            raw->touched = 0;
+        }
+        else
+        {
+            // Swap once a touchscreen input is received during a match
+            if (screen->touched == 1 && gamemode != 0 && *gamemode != 0xFFFFFFFF)
+            {
+                drcMode = !drcMode;
+                screenPressTimeout = 300;
+            }
+        }
+    }
+}
+
+DECL(void, VPADGetTPCalibratedPointEx, int chan, int resolution, VPADTPData *screen, VPADTPData *raw)
+{
+    real_VPADGetTPCalibratedPointEx(chan, resolution, screen, raw);
+    
+    // check for Splatoon
+    if (isSplatoon)
+    {
+        if (screenPressTimeout != 0)
+        {
+            screenPressTimeout--;
+        }
+
+        // disable touchscreen input if the TV is on the DRC
+        if (drcMode == 1 && screenPressTimeout == 0)
+        {
+            screen->touched = 0;
+            raw->touched = 0;
+        }
+        else
+        {
+            // Swap once a touchscreen input is received during a match
+            if (screen->touched == 1 && gamemode != 0 && *gamemode != 0xFFFFFFFF)
+            {
+                drcMode = !drcMode;
+                screenPressTimeout = 300;
+            }
+        }
+    }
+}
+
 /* *****************************************************************************
  * Creates function pointer array
  * ****************************************************************************/
@@ -211,7 +357,11 @@ static struct hooks_magic_t {
 	MAKE_MAGIC(FSReadFileWithPos, LIB_FS, STATIC_FUNCTION),
 	MAKE_MAGIC(FSSetPosFile, LIB_FS, STATIC_FUNCTION),
 	MAKE_MAGIC(FSGetStatFile, LIB_FS, STATIC_FUNCTION),
-	MAKE_MAGIC(FSIsEof, LIB_FS, STATIC_FUNCTION)
+	MAKE_MAGIC(FSIsEof, LIB_FS, STATIC_FUNCTION),
+    MAKE_MAGIC(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION),
+    MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
+    MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION),
+    MAKE_MAGIC(VPADGetTPCalibratedPointEx, LIB_VPAD, STATIC_FUNCTION)
 };
 
 
@@ -391,6 +541,14 @@ unsigned int GetAddressOfFunction(const char * functionName,unsigned int library
         log_printf("FindExport of %s! From LIB_FS\n", functionName);
         if(coreinit_handle == 0){log_print("LIB_FS not aquired\n"); return 0;}
         rpl_handle = coreinit_handle;
+    }else if (library == LIB_GX2){
+        log_printf("FindExport of %s! From LIB_GX2\n", functionName);
+        if(gx2_handle == 0){log_print("LIB_GX2 not aquired\n"); return 0;}
+        rpl_handle = gx2_handle;
+    }else if (library == LIB_VPAD){
+        log_printf("FindExport of %s! From LIB_VPAD\n", functionName);
+        if(vpad_handle == 0){log_print("LIB_VPAD not aquired\n"); return 0;}
+        rpl_handle = vpad_handle;
     }
 
     if(!rpl_handle){
