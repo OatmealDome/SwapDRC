@@ -110,7 +110,7 @@ int Menu_Main()
 		
 		// Render IP selector and check for buttons
 		u_serv_ip ip;
-		ip.full = ( (192<<24) | (168<<16) | (2<<8) | (15<<0) );
+		ip.full = ( (192<<24) | (168<<16) | (86<<8) | (186<<0) );
 		VPADData vpad_data;
 		s32 error;
 		int delay = 0;
@@ -186,7 +186,7 @@ int Menu_Main()
 				{
 					sel_ip++;
 					sel_ip = sel_ip % 4;
-					delay = 12;
+					delay = 6;
 				}
 			}
 			else if ((vpad_data.btns_h & VPAD_BUTTON_UP) && gui_mode == 0)
@@ -194,7 +194,7 @@ int Menu_Main()
 				if (--delay <= 0)
 				{
 					ip.digit[sel_ip]++;
-					delay = 12;
+					delay = 6;
 				}
 			}
 			else if ((vpad_data.btns_h & VPAD_BUTTON_DOWN) && gui_mode == 0)
@@ -202,7 +202,7 @@ int Menu_Main()
 				if (--delay <= 0)
 				{
 					ip.digit[sel_ip]--;
-					delay = 12;
+					delay = 6;
 				}
 			}
 			else

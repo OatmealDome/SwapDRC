@@ -194,7 +194,13 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
     // 0x0 = normal
     // 0x1 = swap
 
-    if (drcMode == 1)
+	// the 1st if statement can also FORCE the drcMode to default when inkstrike is activated
+
+	if (drcMode == 0 || (isSplatoon && *inkstrikeEq == 2 && *spTimer != 0))
+	{
+		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
+	}
+    else
     {
         if (scan_target == 0x1)
         {
@@ -204,10 +210,6 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
         {
             real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x1);
         }
-    }
-    else
-    {
-        real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
     }
 }
 
@@ -238,69 +240,63 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
                 drcMode = !drcMode;
             }
         }
-        else
-        {
-            // switch on L and SELECT
-            if (buffer->btns_d & VPAD_BUTTON_MINUS)
-            {
-                drcMode = !drcMode;
-            }
-        }
-    }
-    else
-    {
-        // switch on L and SELECT
-        if (buffer->btns_d & VPAD_BUTTON_MINUS)
-        {
-            drcMode = !drcMode;
-        }
+
+		// Checks special equipped pointer
+		if (*(inkstrikeEq - 0xC) != 0x3F800000)
+		{
+			uint32_t firstBase = *(uint32_t*)0x106E46E8;
+			if (firstBase > 0x1D000000 && firstBase < 0x27000000)
+			{
+				inkstrikeEq = (uint32_t*)(firstBase + 0x80);
+				spTimer = (uint32_t*)(firstBase + 0x80C);
+			}
+		}
     }
 
+	// switch on L and SELECT
+	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L)
+	{
+		drcMode = !drcMode;
+	}
+	
     // disable touchscreen input if the TV is on the DRC
-    if (drcMode == 1)
+	if (drcMode == 0 || (isSplatoon && *inkstrikeEq == 2 && *spTimer != 0)) {}
+	else
     {
         buffer->tpdata.touched = 0;
         buffer->tpdata1.touched = 0;
         buffer->tpdata2.touched = 0;
     }
-
+	
     return ret;
 }
 
 DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw)
 {
     real_VPADGetTPCalibratedPoint(chan, screen, raw);
-    
-    // check for Splatoon
-    if (isSplatoon)
-    {
-        if (screenPressTimeout != 0)
-        {
-            screenPressTimeout--;
-        }
-
-        // disable touchscreen input if the TV is on the DRC
-        if (drcMode == 1 && screenPressTimeout == 0)
-        {
-            screen->touched = 0;
-            raw->touched = 0;
-        }
-        else
-        {
-            // Swap once a touchscreen input is received during a match
-            if (screen->touched == 1 && gamemode != 0 && *gamemode != 0xFFFFFFFF)
-            {
-                drcMode = !drcMode;
-                screenPressTimeout = 300;
-            }
-        }
-    }
+	
+	// disable touchscreen input if the TV is on the DRC
+	if (drcMode == 0 || (isSplatoon && *inkstrikeEq == 2 && *spTimer != 0)) {}
+	else
+	{
+		screen->touched = 0;
+		raw->touched = 0;
+	}
 }
 
 DECL(void, VPADGetTPCalibratedPointEx, int chan, int resolution, VPADTPData *screen, VPADTPData *raw)
 {
     real_VPADGetTPCalibratedPointEx(chan, resolution, screen, raw);
-    
+
+	// disable touchscreen input if the TV is on the DRC
+	if (drcMode == 0 || (isSplatoon && *inkstrikeEq == 2 && *spTimer != 0)) {}
+	else
+	{
+		screen->touched = 0;
+		raw->touched = 0;
+	}
+
+    /*
     // check for Splatoon
     if (isSplatoon)
     {
@@ -324,7 +320,7 @@ DECL(void, VPADGetTPCalibratedPointEx, int chan, int resolution, VPADTPData *scr
                 screenPressTimeout = 300;
             }
         }
-    }
+    }*/
 }
 
 /* *****************************************************************************
@@ -360,8 +356,8 @@ static struct hooks_magic_t {
 	MAKE_MAGIC(FSIsEof, LIB_FS, STATIC_FUNCTION),
     MAKE_MAGIC(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION),
     MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
-    MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION),
-    MAKE_MAGIC(VPADGetTPCalibratedPointEx, LIB_VPAD, STATIC_FUNCTION)
+    MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION)//,
+    //MAKE_MAGIC(VPADGetTPCalibratedPointEx, LIB_VPAD, STATIC_FUNCTION)
 };
 
 
