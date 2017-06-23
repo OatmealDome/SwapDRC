@@ -241,15 +241,12 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
             }
         }
 
-		// Checks special equipped pointer
-		if (*(inkstrikeEq - 0xC) != 0x3F800000)
+		// checks special equipped pointer
+		uint32_t* ptr = (uint32_t*)0x106E46E8;
+		if (buffer->btns_d & VPAD_BUTTON_MINUS && (*ptr > 0x1D000000 && *ptr < 0x28000000))
 		{
-			uint32_t firstBase = *(uint32_t*)0x106E46E8;
-			if (firstBase > 0x1D000000 && firstBase < 0x27000000)
-			{
-				inkstrikeEq = (uint32_t*)(firstBase + 0x80);
-				spTimer = (uint32_t*)(firstBase + 0x80C);
-			}
+			inkstrikeEq = (uint32_t*)(*ptr + 0x80);
+			spTimer = (uint32_t*)(*ptr + 0x808);
 		}
     }
 
@@ -258,7 +255,7 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
 	{
 		drcMode = !drcMode;
 	}
-	
+
     // disable touchscreen input if the TV is on the DRC
 	if (drcMode == 0 || (isSplatoon && *inkstrikeEq == 2 && *spTimer != 0)) {}
 	else
@@ -356,8 +353,8 @@ static struct hooks_magic_t {
 	MAKE_MAGIC(FSIsEof, LIB_FS, STATIC_FUNCTION),
     MAKE_MAGIC(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION),
     MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
-    MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION)//,
-    //MAKE_MAGIC(VPADGetTPCalibratedPointEx, LIB_VPAD, STATIC_FUNCTION)
+    MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION),
+    MAKE_MAGIC(VPADGetTPCalibratedPointEx, LIB_VPAD, STATIC_FUNCTION)
 };
 
 

@@ -5,6 +5,7 @@
 
 extern int isSplatoon;
 extern int drcMode;
+extern int patched;
 extern int screenPressTimeout;
 extern uint32_t* gamemode;
 extern uint32_t* inkstrikeEq;
