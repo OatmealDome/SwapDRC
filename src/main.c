@@ -141,7 +141,7 @@ int Menu_Main()
 			{
 				PRINT_TEXT2(0, 4, "   IP : %3d.%3d.%3d.%3d", ip.digit[0], ip.digit[1], ip.digit[2], ip.digit[3]);
 				PRINT_TEXT2(0, 6, "Use the D-Pad to enter in your computer's IP address,");
-				PRINT_TEXT2(0, 8, "Press A to install TCPGecko + Cafiine.");
+				PRINT_TEXT2(0, 8, "Press A to install TCPGecko + Cafiine. (need server running)");
 				PRINT_TEXT2(0, 9, "Press Y to install TCPGecko only.");
 				PRINT_TEXT2(0, 10, "Press B to view guide.");
 				PRINT_TEXT2(0, 11, "Press X for credits.");
@@ -195,6 +195,7 @@ int Menu_Main()
 			{
 				// Set wait message
 				OSScreenClearBufferEx(1, 0);
+				OSScreenClearBufferEx(0, 0);
 				PRINT_TEXT2(40, 17, "Installing geckiine...");
 				OSScreenFlipBuffersEx(1);
 				break;
@@ -203,7 +204,8 @@ int Menu_Main()
 			{
 				// Set wait message
 				OSScreenClearBufferEx(1, 0);
-				PRINT_TEXT2(30, 17, "Then no cafiine for you bud...");
+				OSScreenClearBufferEx(0, 0);
+				PRINT_TEXT2(36, 17, "Installing TCPGecko only...");
 				ip.full = 0;
 				OSScreenFlipBuffersEx(1);
 				break;
