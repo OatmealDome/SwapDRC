@@ -73,22 +73,21 @@ int Menu_Main()
 		log_deinit();
 		return EXIT_RELAUNCH_ON_LOAD;
 	}
-	/*
-	if (strlen(cosAppXmlInfoStruct.rpx_name) == 0)
-	{
-		log_printf("Returning to the Wii U menu.\n");
-
-		SYSLaunchMenu();
-
-		log_deinit();
-		return EXIT_RELAUNCH_ON_LOAD;
-	}*/
 
 	// Check for Splatoon (Gambit)
 	if (strcasecmp("Gambit.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
 	{
 		log_printf("Splatoon enhanced swapping enabled.\n");
 		isSplatoon = 1;
+	}
+	else
+	{
+		if (isSplatoon == 1)
+		{
+			log_printf("Splatoon enhanced swapping disabled.\n");
+		}
+
+		isSplatoon = 0;
 	}
 
 	log_printf("Starting the TCPGecko server.\n");
@@ -262,7 +261,7 @@ int Menu_Main()
 				if (--delay <= 0)
 				{
 					ip.digit[sel_ip]++;
-					delay = 3;
+					delay = 2;
 				}
 			}
 			else if ((vpad_data.btns_d & VPAD_BUTTON_DOWN) && gui_mode == 0)
@@ -278,7 +277,7 @@ int Menu_Main()
 				if (--delay <= 0)
 				{
 					ip.digit[sel_ip]--;
-					delay = 3;
+					delay = 2;
 				}
 			}
 			else if ((vpad_data.btns_h & VPAD_BUTTON_HOME) && gui_mode == 0)
@@ -308,10 +307,10 @@ int Menu_Main()
 		PatchMethodHooks();
 		patched = 1;
 		new_addr = ip.full;
+
+		log_printf("Returning to application.\n");
+		log_deinit();
 	}
-	
-	log_printf("Returning to application.\n");
-	log_deinit();
 	
 	return EXIT_RELAUNCH_ON_LOAD;
 }
