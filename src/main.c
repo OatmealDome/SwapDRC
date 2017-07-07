@@ -10,6 +10,7 @@
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/vpad_functions.h"
+#include "dynamic_libs/procui_functions.h"
 #include "utils/logger.h"
 #include "system/memory.h"
 #include "common/common.h"
@@ -46,6 +47,7 @@ int Menu_Main()
 	InitSysFunctionPointers();
 	InitFSFunctionPointers();
 	InitVPadFunctionPointers();
+	InitProcUIFunctionPointers();
 	
 	log_init("192.168.2.18");
 	
@@ -307,11 +309,12 @@ int Menu_Main()
 		PatchMethodHooks();
 		patched = 1;
 		new_addr = ip.full;
-
-		log_printf("Returning to application.\n");
-		log_deinit();
 	}
 	
+	log_printf("Returning to application.\n");
+	log_printf("De-initializing logging.\n");
+	log_deinit();
+
 	return EXIT_RELAUNCH_ON_LOAD;
 }
 
