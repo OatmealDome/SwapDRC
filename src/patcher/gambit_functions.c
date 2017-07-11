@@ -31,10 +31,25 @@ void gambitPatcher(VPADData *buffer)
 		inkstrikeEq = (uint32_t*)(*ptr + 0x80);
 		spTimer = (uint32_t*)(*ptr + 0x808);
 
-		// switch if B is pressed in non-menu areas
-		if (buffer->btns_d & VPAD_BUTTON_B)
+		if (gamemode == (uint32_t*)0)
 		{
-			drcMode = !drcMode;
+			uint32_t firstBase = *(uint32_t*)0x106A3BA0;
+			if (firstBase > 0x10000000 && firstBase < 0x11000000)
+			{
+				uint32_t secondBase = *(uint32_t*)(firstBase + 0xD074);
+				if (secondBase > 0x12000000 && secondBase < 0x14000000)
+				{
+					gamemode = (uint32_t*)(secondBase + 0x238);
+				}
+			}
+		}
+		else if (*gamemode != 0xFFFFFFFF)
+		{
+			// switch if B is pressed
+			if (buffer->btns_d & VPAD_BUTTON_B)
+			{
+				drcMode = !drcMode;
+			}
 		}
 		
 		////DEV
