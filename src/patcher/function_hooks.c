@@ -15,6 +15,7 @@
 #include "utils/logger.h"
 #include "cafiine/cafiine.h"
 #include "retain_vars.h"
+#include "gambit_functions.h"
 
 #define LIB_CODE_RW_BASE_OFFSET                         0xC1000000
 #define CODE_RW_BASE_OFFSET                             0x00000000
@@ -225,7 +226,7 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
     // 0x1 = swap
 
 	// check drc swap and force the drcMode to default when inkstrike is activated
-	if (drcMode == 0 || (isSplatoon && *inkstrikeEq == 2 && *spTimer != 0))
+	if (drcMode == 0 || gambitDRC())
 	{
 		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 	}
@@ -249,41 +250,7 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
 	// check if we should use Splatoon mode controls
 	if (isSplatoon)
 	{
-		// checks special equipped pointer
-		uint32_t* ptr = (uint32_t*)0x106E46E8;
-		if (*ptr == 0)
-		{
-			// prevents the game from crashing
-			inkstrikeEq = (uint32_t*)0x10000000;
-			spTimer = (uint32_t*)0x10000000;
-		}
-		else if (*ptr > 0x1D000000 && *ptr < 0x28000000)
-		{
-			inkstrikeEq = (uint32_t*)(*ptr + 0x80);
-			spTimer = (uint32_t*)(*ptr + 0x808);
-		}
-
-		// enable/disable B switching
-		if (gamemode == (uint32_t*)0)
-		{
-			uint32_t firstBase = *(uint32_t*)0x106A3BA0;
-			if (firstBase > 0x10000000 && firstBase < 0x11000000)
-			{
-				uint32_t secondBase = *(uint32_t*)(firstBase + 0xD074);
-				if (secondBase > 0x12000000 && secondBase < 0x14000000)
-				{
-					gamemode = (uint32_t*)(secondBase + 0x238);
-				}
-			}
-		}
-		else if (*gamemode != 0xFFFFFFFF)
-		{
-			// switch if B is pressed
-			if (buffer->btns_d & VPAD_BUTTON_B)
-			{
-				drcMode = !drcMode;
-			}
-		}
+		gambitPatcher(buffer);
 	}
 
 	// switch on L and SELECT
@@ -300,7 +267,7 @@ DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *r
     real_VPADGetTPCalibratedPoint(chan, screen, raw);
 
 	// disable touchscreen input if the TV is on the DRC
-	if (drcMode == 0 || (isSplatoon && home && *inkstrikeEq == 2 && *spTimer != 0)) {}
+	if (drcMode == 0 || gambitDRC()) {}
 	else
 	{
 		screen->touched = 0;

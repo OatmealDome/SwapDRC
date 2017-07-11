@@ -136,14 +136,14 @@ int Menu_Main()
 			VPADRead(0, &vpad_data, 1, &error);
 
 			// Title
-			PRINT_TEXT2(14, 1, "-- Geckiine + Swap DRC --");
+			PRINT_TEXT2(20, 1, "-- Swap DRC --");
 
 			if (gui_mode == 0) // IP selector
 			{
 				PRINT_TEXT2(0, 4, "   IP : %3d.%3d.%3d.%3d", ip.digit[0], ip.digit[1], ip.digit[2], ip.digit[3]);
 				PRINT_TEXT2(0, 6, "Use the D-Pad to enter in your computer's IP address,");
-				PRINT_TEXT2(0, 8, "Press A to install TCPGecko + Cafiine. (need server running)");
-				PRINT_TEXT2(0, 9, "Press Y to install TCPGecko only.");
+				PRINT_TEXT2(0, 8, "Press A to install with TCPGecko.");
+				PRINT_TEXT2(0, 9, "Press Y to install with TCPGecko + Cafiine. (need server running)");
 				PRINT_TEXT2(0, 10, "Press B to view guide.");
 				PRINT_TEXT2(0, 11, "Press X for credits.");
 				PRINT_TEXT2(0, 13, "Press Home to Exit.");
@@ -161,7 +161,7 @@ int Menu_Main()
 				PRINT_TEXT2(0, 9, "* seresaa for the banner and Geckiine Creator");
 				PRINT_TEXT2(0, 10, "* 466 for web hosting");
 				PRINT_TEXT2(0, 11, "* /u/MachMatic for the banner background");
-				PRINT_TEXT2(0, 12, "* Yahya14 TBA 2017");
+				PRINT_TEXT2(0, 13, "* OatmealDome and Yahya14 for Swap DRC");
 				PRINT_TEXT2(0, 14, "Press X to return to the IP selector.");
 			}
 
@@ -197,7 +197,8 @@ int Menu_Main()
 				// Set wait message
 				OSScreenClearBufferEx(1, 0);
 				OSScreenClearBufferEx(0, 0);
-				PRINT_TEXT2(40, 17, "Installing geckiine...");
+				PRINT_TEXT2(42, 17, "Installing TCPGecko...");
+				ip.full = 0;
 				OSScreenFlipBuffersEx(1);
 				break;
 			}
@@ -206,8 +207,7 @@ int Menu_Main()
 				// Set wait message
 				OSScreenClearBufferEx(1, 0);
 				OSScreenClearBufferEx(0, 0);
-				PRINT_TEXT2(36, 17, "Installing TCPGecko only...");
-				ip.full = 0;
+				PRINT_TEXT2(42, 17, "Installing geckiine...");
 				OSScreenFlipBuffersEx(1);
 				break;
 			}
@@ -309,11 +309,11 @@ int Menu_Main()
 		PatchMethodHooks();
 		patched = 1;
 		new_addr = ip.full;
+
+		log_printf("Returning to application.\n");
+		log_printf("De-initializing logging.\n");
+		log_deinit();
 	}
-	
-	log_printf("Returning to application.\n");
-	log_printf("De-initializing logging.\n");
-	log_deinit();
 
 	return EXIT_RELAUNCH_ON_LOAD;
 }
