@@ -14,4 +14,4 @@ extern "C" {
 }
 #endif
 
-#endif /* _FS_H */
+#endif /* _GAMBIT_FUNCTIONS_H_ */

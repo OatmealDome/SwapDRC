@@ -52,6 +52,7 @@ void gambitPatcher(VPADData *buffer)
 			}
 		}
 		
+		/*
 		////DEV
 		int j = 0;
 		// find team side for each player
@@ -76,7 +77,7 @@ void gambitPatcher(VPADData *buffer)
 
 			}
 		}
-
+		*/
 		////
 	}
 }
