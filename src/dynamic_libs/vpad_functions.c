@@ -35,6 +35,7 @@ EXPORT_DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTP
 EXPORT_DECL(void, VPADGetTPCalibratedPointEx, int chan, int resolution, VPADTPData *screen, VPADTPData *raw);
 EXPORT_DECL(int, VPADBASEGetMotorOnRemainingCount, int padnum);
 EXPORT_DECL(int, VPADBASESetMotorOnRemainingCount, int padnum, int counter);
+EXPORT_DECL(void, VPADSetSensorBar, s32 chan, bool on);
 
 void InitAcquireVPad(void)
 {
@@ -53,7 +54,8 @@ void InitVPadFunctionPointers(void)
     OS_FIND_EXPORT(vpad_handle, VPADGetLcdMode);
     OS_FIND_EXPORT(vpad_handle, VPADSetLcdMode);
     OS_FIND_EXPORT(vpad_handle, VPADGetTPCalibratedPoint);
-    OS_FIND_EXPORT(vpad_handle, VPADGetTPCalibratedPointEx);
+	OS_FIND_EXPORT(vpad_handle, VPADGetTPCalibratedPointEx);
+	OS_FIND_EXPORT(vpad_handle, VPADSetSensorBar);
     OS_FIND_EXPORT(vpadbase_handle, VPADBASEGetMotorOnRemainingCount);
     OS_FIND_EXPORT(vpadbase_handle, VPADBASESetMotorOnRemainingCount);
 }

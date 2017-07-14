@@ -9,7 +9,6 @@
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/vpad_functions.h"
-#include "dynamic_libs/procui_functions.h"
 #include "kernel/kernel_functions.h"
 #include "function_hooks.h"
 #include "utils/logger.h"
@@ -27,23 +26,7 @@
         res (* real_ ## name)(__VA_ARGS__) __attribute__((section(".data"))); \
         res my_ ## name(__VA_ARGS__)
 
-int home = 1;
-
-// funcions for procui
-int foreground_acquire(void* data)
-{
-	// reset flag
-	home = 0;
-	return 0;
-}
-
-int foreground_release(void* data)
-{
-	// signal to the thread that the function pointers need to be reacquired
-	home = 1;
-	return 0;
-}
-
+int swapForce = 0;
 
 DECL(int, FSAInit, void) {
 	if ((int)bss_ptr == 0x0a000000) {
@@ -204,16 +187,10 @@ DECL(int, FSIsEof, void *pClient, void *pCmd, int fd, int error) {
 	return real_FSIsEof(pClient, pCmd, fd, error);
 }
 
-DECL(void, ProcUIInit, ProcUISaveCallbackFunction function) {
-	// init ProcUI
-	real_ProcUIInit(function);
-
-	if (isSplatoon) {
-		// register callbacks
-		ProcUIRegisterCallback(PROCUI_CALLBACK_ACQUIRE, &foreground_acquire, NULL, 0);
-		ProcUIRegisterCallback(PROCUI_CALLBACK_RELEASE, &foreground_release, NULL, 0);
-	}
+DECL(void, VPADSetSensorBar, s32 chan, bool on) {
+	real_VPADSetSensorBar(chan, on);
 }
+
 
 DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan_target)
 {
@@ -226,52 +203,54 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
     // 0x1 = swap
 
 	// check drc swap and force the drcMode to default when inkstrike is activated
-	if (drcMode == 0 || gambitDRC())
+	if (drcMode == 0 || swapForce)
 	{
 		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 	}
     else
     {
-        if (scan_target == 0x1)
-        {
-            real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x4);
-        }
-        else if (scan_target == 0x4)
-        {
-            real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x1);
-        }
+		switch (scan_target)
+		{
+		case 0x1:
+			real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x4);
+			break;
+		case 0x4:
+			real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x1);
+			break;
+		}
     }
 }
 
 DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
 {
-    int ret = real_VPADRead(chan, buffer, buffer_size, error);
-
-	// check if we should use Splatoon mode controls
-	if (isSplatoon)
-	{
-		gambitPatcher(buffer);
-	}
 
 	// switch on L and SELECT
 	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L)
 	{
 		drcMode = !drcMode;
+		log_printf("isSplatoon Address: %p\n", (void*)&isSplatoon);
+		// enable/disable sensor bar
+		VPADSetSensorBar(chan, drcMode);
 	}
 
-    return ret;
+	// patches splatoon enhanced controls
+	if (isSplatoon)
+	{
+		gambitPatches(buffer);
+		gambitDRC();
+	}
+
+    return real_VPADRead(chan, buffer, buffer_size, error);
 }
 
 DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw)
 {
     real_VPADGetTPCalibratedPoint(chan, screen, raw);
 
-	// disable touchscreen input if the TV is on the DRC
-	if (drcMode == 0 || gambitDRC()) {}
-	else
+	if (isSplatoon)
 	{
-		screen->touched = 0;
-		raw->touched = 0;
+		// handles modified touch input for super jumps
+		gambitTouch(screen);
 	}
 }
 
@@ -306,10 +285,10 @@ static struct hooks_magic_t {
 	MAKE_MAGIC(FSSetPosFile, LIB_FS, STATIC_FUNCTION),
 	MAKE_MAGIC(FSGetStatFile, LIB_FS, STATIC_FUNCTION),
 	MAKE_MAGIC(FSIsEof, LIB_FS, STATIC_FUNCTION),
-    MAKE_MAGIC(ProcUIInit, LIB_PROCUI, DYNAMIC_FUNCTION),
-    MAKE_MAGIC(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION),
-    MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
-    MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION)
+	MAKE_MAGIC(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION),
+	MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
+	MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION),
+	MAKE_MAGIC(VPADSetSensorBar, LIB_VPAD, STATIC_FUNCTION)
 };
 
 
@@ -489,11 +468,7 @@ unsigned int GetAddressOfFunction(const char * functionName,unsigned int library
         log_printf("FindExport of %s! From LIB_FS\n", functionName);
         if(coreinit_handle == 0){log_print("LIB_FS not aquired\n"); return 0;}
         rpl_handle = coreinit_handle;
-    }else if (library == LIB_PROCUI) {
-		log_printf("FindExport of %s! From LIB_PROCUI\n", functionName);
-		if (vpad_handle == 0) { log_print("LIB_PROCUI not aquired\n"); return 0; }
-		rpl_handle = procui_handle;
-	}else if (library == LIB_GX2){
+    }else if (library == LIB_GX2){
         log_printf("FindExport of %s! From LIB_GX2\n", functionName);
         if(gx2_handle == 0){log_print("LIB_GX2 not aquired\n"); return 0;}
         rpl_handle = gx2_handle;

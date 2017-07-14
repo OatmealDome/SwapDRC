@@ -14,7 +14,7 @@ struct fs_async_t {
 	void *queue;
 };
 
-extern int home;
+int swapForce;
 void PatchMethodHooks(void);
 void RestoreInstructions(void);
 unsigned int GetAddressOfFunction(const char * functionName,unsigned int library);

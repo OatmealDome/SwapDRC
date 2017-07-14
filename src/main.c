@@ -10,7 +10,6 @@
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/vpad_functions.h"
-#include "dynamic_libs/procui_functions.h"
 #include "utils/logger.h"
 #include "system/memory.h"
 #include "common/common.h"
@@ -47,7 +46,6 @@ int Menu_Main()
 	InitSysFunctionPointers();
 	InitFSFunctionPointers();
 	InitVPadFunctionPointers();
-	InitProcUIFunctionPointers();
 	
 	log_init("192.168.2.18");
 	
@@ -68,6 +66,8 @@ int Menu_Main()
 				 "bl memset\n"
 				 );
 
+	PatchMethodHooks();
+
 	if (strcasecmp("men.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
 	{
 		log_printf("Wii U menu started, exiting.\n");
@@ -84,12 +84,11 @@ int Menu_Main()
 	}
 	else
 	{
-		if (isSplatoon == 1)
+		if (isSplatoon == 1 && strcasecmp("miiverse_post.rpx", cosAppXmlInfoStruct.rpx_name) != 0)
 		{
 			log_printf("Splatoon enhanced swapping disabled.\n");
+			isSplatoon = 0;
 		}
-
-		isSplatoon = 0;
 	}
 
 	log_printf("Starting the TCPGecko server.\n");
@@ -306,7 +305,7 @@ int Menu_Main()
 
 		SYSLaunchMenu();
 
-		PatchMethodHooks();
+			RestoreInstructions();
 		patched = 1;
 		new_addr = ip.full;
 

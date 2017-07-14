@@ -7,8 +7,19 @@
 extern "C" {
 #endif
 
-	extern void gambitPatcher(VPADData *buffer);
-	extern int gambitDRC(void);
+	typedef enum GambitDPAD
+	{
+		D_NEUTRAL,
+		D_LEFT,
+		D_UP,
+		D_RIGHT,
+		D_DOWN
+	} GambitDPAD;
+
+	extern void gambitDRC(void);
+	extern void gambitJump(VPADData *buffer);
+	extern void gambitTouch(VPADTPData *screen);
+	extern void gambitPatches(VPADData *buffer);
 
 #ifdef __cplusplus
 }
