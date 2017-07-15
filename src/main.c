@@ -31,7 +31,58 @@ typedef union u_serv_ip
 	uint32_t full;
 } u_serv_ip;
 
-//static unsigned int patched = 0;
+void gambitScreen()
+{
+	memoryInitialize();
+	// Init screen and screen buffers
+	OSScreenInit();
+	int screen_buf0_size = OSScreenGetBufferSizeEx(0);
+	int screen_buf1_size = OSScreenGetBufferSizeEx(1);
+	unsigned char *screenBuffer = MEM1_alloc(screen_buf0_size + screen_buf1_size, 0x100);
+	char msg[80];
+
+	OSScreenSetBufferEx(0, screenBuffer);
+	OSScreenSetBufferEx(1, (screenBuffer + screen_buf0_size));
+
+	OSScreenEnableEx(0, 1);
+	OSScreenEnableEx(1, 1);
+
+	//OSScreenClearBufferEx(1, 0);
+	//OSScreenClearBufferEx(0, 0);
+	PRINT_TEXT2(0, 1, "Splatoon detected! Enhancing swap controls...");
+	PRINT_TEXT2(2, 3, "Tips:");
+	PRINT_TEXT2(2, 5, "Press B to switch screens except in-game menus.");
+	PRINT_TEXT2(2, 6, "Hold A + D-PAD to super jump to a teammate in a match.");
+
+	PRINT_TEXT2(10, 9, "           Teammate 2");
+	PRINT_TEXT2(10,10, "               _  ");
+	PRINT_TEXT2(10,11, "             _| |_");
+	PRINT_TEXT2(10,12, "Teammate 1  |_   _|  Teammate 3");
+	PRINT_TEXT2(10,13, "              |_|");
+	PRINT_TEXT2(10,16, "          Spawn Point");
+
+	PRINT_TEXT2(50, 8, " ____________");
+	PRINT_TEXT2(50, 9, "| Teammate 1 |");
+	PRINT_TEXT2(50, 9, " ____________");
+	PRINT_TEXT2(50, 10, " ____________");
+	PRINT_TEXT2(50, 11, "| Teammate 2 |");
+	PRINT_TEXT2(50, 11, " ____________");
+	PRINT_TEXT2(50, 12, " ____________");
+	PRINT_TEXT2(50, 13, "| Teammate 3 |");
+	PRINT_TEXT2(50, 13, " ____________");
+	PRINT_TEXT2(50, 14, " _______");
+	PRINT_TEXT2(50, 15, "| Spawn |");
+	PRINT_TEXT2(50, 16, "| Point |");
+	PRINT_TEXT2(50, 16, " _______");
+
+	OSScreenFlipBuffersEx(1);
+
+	sleep(1);
+	MEM1_free(screenBuffer);
+	screenBuffer = NULL;
+
+	memoryRelease();
+}
 
 /* Entry point */
 int Menu_Main()
@@ -71,7 +122,6 @@ int Menu_Main()
 	if (strcasecmp("men.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
 	{
 		log_printf("Wii U menu started, exiting.\n");
-
 		log_deinit();
 		return EXIT_RELAUNCH_ON_LOAD;
 	}
@@ -80,6 +130,7 @@ int Menu_Main()
 	if (strcasecmp("Gambit.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
 	{
 		log_printf("Splatoon enhanced swapping enabled.\n");
+		gambitScreen();
 		isSplatoon = 1;
 	}
 	else
@@ -185,7 +236,6 @@ int Menu_Main()
 
 
 				PRINT_TEXT2(0,13, "Hold L then press Minus to swap screens.");
-				PRINT_TEXT2(0,14, "Splatoon Only: Press B during a battle.");
 				PRINT_TEXT2(0, 15, "Press B to return to the IP selector.");
 
 				
@@ -317,27 +367,5 @@ int Menu_Main()
 	return EXIT_RELAUNCH_ON_LOAD;
 }
 
-// clear both buffers
-void clearScreen()
-{
-	int i;
-	for (i = 0; i < 2; i++)
-	{
-		int screen_buf0_size = OSScreenGetBufferSizeEx(0);
-		int screen_buf1_size = OSScreenGetBufferSizeEx(1);
-		
-		// Clear screens
-		OSScreenClearBufferEx(0, 0);
-		OSScreenClearBufferEx(1, 0);
-		
-		// Flush the cache
-		DCFlushRange((void *)0xF4000000, screen_buf0_size);
-		DCFlushRange((void *)0xF4000000 + screen_buf0_size, screen_buf1_size);
-		
-		// Flip buffers
-		OSScreenFlipBuffersEx(0);
-		OSScreenFlipBuffersEx(1);
-	}
-}
 
 

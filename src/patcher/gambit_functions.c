@@ -21,64 +21,6 @@ void gambitDRC()
 		swapForce = 0;
 }
 
-void gambitJump(VPADData *buffer)
-{
-
-	// define gamemode pointer
-	if (gamemode == (uint32_t*)0)
-	{
-		uint32_t firstBase = *(uint32_t*)0x106A3BA0;
-		if (firstBase > 0x10000000 && firstBase < 0x11000000)
-		{
-			uint32_t secondBase = *(uint32_t*)(firstBase + 0xD074);
-			if (secondBase > 0x12000000 && secondBase < 0x14000000)
-			{
-				gamemode = (uint32_t*)(secondBase + 0x238);
-			}
-		}
-	}
-
-	if (*gamemode != 0xFFFFFFFF)
-	{
-		if (buffer->btns_h & VPAD_BUTTON_A)
-		{
-			// force default swap
-			AButton = true;
-
-			if (buffer->btns_h & VPAD_BUTTON_LEFT)
-			{
-				touchVal = D_LEFT;
-			}
-			else if (buffer->btns_h & VPAD_BUTTON_UP)
-			{
-				touchVal = D_UP;
-			}
-			else if (buffer->btns_h & VPAD_BUTTON_RIGHT)
-			{
-				touchVal = D_RIGHT;
-			}
-			else if (buffer->btns_h & VPAD_BUTTON_DOWN)
-			{
-				touchVal = D_DOWN;
-			}
-			else
-			{
-				touchVal = D_NEUTRAL;
-			}
-		}
-		else
-		{
-			AButton = false;
-			touchVal = D_NEUTRAL;
-		}
-	}
-	else
-	{
-		AButton = false;
-		touchVal = D_NEUTRAL;
-	}
-}
-
 void gambitTouch(VPADTPData *screen)
 {
 	switch (touchVal)
@@ -129,9 +71,23 @@ void gambitPatches(VPADData *buffer)
 	else
 	{
 		// define pointers
+		if (gamemode == (uint32_t*)0)
+		{
+			uint32_t firstBase = *(uint32_t*)0x106A3BA0;
+			if (firstBase > 0x10000000 && firstBase < 0x11000000)
+			{
+				uint32_t secondBase = *(uint32_t*)(firstBase + 0xD074);
+				if (secondBase > 0x12000000 && secondBase < 0x14000000)
+				{
+					gamemode = (uint32_t*)(secondBase + 0x238);
+				}
+			}
+		}
+
 		inkstrikeEq = (uint32_t*)(*ptr + 0x80);
 		spTimer = (uint32_t*)(*ptr + 0x808);
 
+		// check if in-game menu is up
 		if (*ptr2 > 0x1C000000)
 		{
 			// switch if B is pressed
@@ -143,7 +99,41 @@ void gambitPatches(VPADData *buffer)
 				VPADSetSensorBar(0, drcMode);
 			}
 
-			gambitJump(buffer);
+			// force temporary default swap in a match
+			if (buffer->btns_h & VPAD_BUTTON_A)
+			{
+				if (*gamemode != 0xFFFFFFFF)
+				{
+					AButton = true;
+
+					// super jumping with D-Pad
+					if (buffer->btns_h & VPAD_BUTTON_LEFT)
+					{
+						touchVal = D_LEFT;
+					}
+					else if (buffer->btns_h & VPAD_BUTTON_UP)
+					{
+						touchVal = D_UP;
+					}
+					else if (buffer->btns_h & VPAD_BUTTON_RIGHT)
+					{
+						touchVal = D_RIGHT;
+					}
+					else if (buffer->btns_h & VPAD_BUTTON_DOWN)
+					{
+						touchVal = D_DOWN;
+					}
+					else
+					{
+						touchVal = D_NEUTRAL;
+					}
+				}
+			}
+			else
+			{
+				AButton = false;
+				touchVal = D_NEUTRAL;
+			}
 		}
 	}
 }
