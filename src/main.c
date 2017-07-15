@@ -300,12 +300,12 @@ int Menu_Main()
 		//return to HBV
 		if (success == -1)
 		{
+			RestoreInstructions();
 			return EXIT_SUCCESS;
 		}
 
 		SYSLaunchMenu();
 
-			RestoreInstructions();
 		patched = 1;
 		new_addr = ip.full;
 
