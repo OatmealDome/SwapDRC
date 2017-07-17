@@ -23,6 +23,8 @@
 #define PRINT_TEXT2(x, y, ...) { snprintf(msg, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, msg); OSScreenPutFontEx(1, x, y, msg); }
 #define PRINT_TEXT3(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
 
+#define BUILD 1.0
+
 
 /* IP union */
 typedef union u_serv_ip
@@ -31,7 +33,7 @@ typedef union u_serv_ip
 	uint32_t full;
 } u_serv_ip;
 
-void gambitScreen()
+void gambitBootScreen()
 {
 	memoryInitialize();
 	// Init screen and screen buffers
@@ -47,33 +49,31 @@ void gambitScreen()
 	OSScreenEnableEx(0, 1);
 	OSScreenEnableEx(1, 1);
 
-	//OSScreenClearBufferEx(1, 0);
-	//OSScreenClearBufferEx(0, 0);
 	PRINT_TEXT2(0, 1, "Splatoon detected! Enhancing swap controls...");
-	PRINT_TEXT2(2, 3, "Tips:");
-	PRINT_TEXT2(2, 5, "Press B to switch screens except in-game menus.");
-	PRINT_TEXT2(2, 6, "Hold A + D-PAD to super jump to a teammate in a match.");
+	PRINT_TEXT2(2, 4, "Tips:");
+	PRINT_TEXT2(2, 6, "Press B to swap displays except in-game menus.");
+	PRINT_TEXT2(2, 7, "Hold A + D-PAD to super jump to a teammate in a match.");
 
-	PRINT_TEXT2(10, 9, "           Teammate 2");
-	PRINT_TEXT2(10,10, "               _  ");
-	PRINT_TEXT2(10,11, "             _| |_");
-	PRINT_TEXT2(10,12, "Teammate 1  |_   _|  Teammate 3");
-	PRINT_TEXT2(10,13, "              |_|");
-	PRINT_TEXT2(10,16, "          Spawn Point");
+	PRINT_TEXT2(10, 10, "           Teammate 2");
+	PRINT_TEXT2(10, 11, "               _  ");
+	PRINT_TEXT2(10, 12, "             _| |_");
+	PRINT_TEXT2(10, 13, "Teammate 1  |_   _|  Teammate 3");
+	PRINT_TEXT2(10, 14, "              |_|");
+	PRINT_TEXT2(10, 16, "           Spawn Point");
 
-	PRINT_TEXT2(50, 8, " ____________");
-	PRINT_TEXT2(50, 9, "| Teammate 1 |");
 	PRINT_TEXT2(50, 9, " ____________");
+	PRINT_TEXT2(50, 10, "| Teammate 1 |");
 	PRINT_TEXT2(50, 10, " ____________");
-	PRINT_TEXT2(50, 11, "| Teammate 2 |");
 	PRINT_TEXT2(50, 11, " ____________");
+	PRINT_TEXT2(50, 12, "| Teammate 2 |");
 	PRINT_TEXT2(50, 12, " ____________");
-	PRINT_TEXT2(50, 13, "| Teammate 3 |");
 	PRINT_TEXT2(50, 13, " ____________");
-	PRINT_TEXT2(50, 14, " _______");
-	PRINT_TEXT2(50, 15, "| Spawn |");
-	PRINT_TEXT2(50, 16, "| Point |");
-	PRINT_TEXT2(50, 16, " _______");
+	PRINT_TEXT2(50, 14, "| Teammate 3 |");
+	PRINT_TEXT2(50, 14, " ____________");
+	PRINT_TEXT2(55, 15, " _______");
+	PRINT_TEXT2(55, 16, "| Spawn |");
+	PRINT_TEXT2(55, 17, "| Point |");
+	PRINT_TEXT2(55, 17, " _______");
 
 	OSScreenFlipBuffersEx(1);
 
@@ -130,16 +130,13 @@ int Menu_Main()
 	if (strcasecmp("Gambit.rpx", cosAppXmlInfoStruct.rpx_name) == 0)
 	{
 		log_printf("Splatoon enhanced swapping enabled.\n");
-		gambitScreen();
+		gambitBootScreen();
 		isSplatoon = 1;
 	}
-	else
+	else if (isSplatoon == 1 && strcasecmp("miiverse_post.rpx", cosAppXmlInfoStruct.rpx_name) != 0)
 	{
-		if (isSplatoon == 1 && strcasecmp("miiverse_post.rpx", cosAppXmlInfoStruct.rpx_name) != 0)
-		{
-			log_printf("Splatoon enhanced swapping disabled.\n");
-			isSplatoon = 0;
-		}
+		log_printf("Splatoon enhanced swapping disabled.\n");
+		isSplatoon = 0;
 	}
 
 	log_printf("Starting the TCPGecko server.\n");
@@ -186,17 +183,17 @@ int Menu_Main()
 			VPADRead(0, &vpad_data, 1, &error);
 
 			// Title
-			PRINT_TEXT2(20, 1, "-- Swap DRC --");
+			PRINT_TEXT2(20, 1, "-- Swap DRC v%.1f --", BUILD);
 
 			if (gui_mode == 0) // IP selector
 			{
 				PRINT_TEXT2(0, 4, "   IP : %3d.%3d.%3d.%3d", ip.digit[0], ip.digit[1], ip.digit[2], ip.digit[3]);
-				PRINT_TEXT2(0, 6, "Use the D-Pad to enter in your computer's IP address,");
+				PRINT_TEXT2(0, 6, "Use the D-Pad to enter in your computer's IP address for Cafiine.");
 				PRINT_TEXT2(0, 8, "Press A to install with TCPGecko.");
-				PRINT_TEXT2(0, 9, "Press Y to install with TCPGecko + Cafiine. (need server running)");
-				PRINT_TEXT2(0, 10, "Press B to view guide.");
-				PRINT_TEXT2(0, 11, "Press X for credits.");
-				PRINT_TEXT2(0, 13, "Press Home to Exit.");
+				PRINT_TEXT2(0, 9, "Press Y to install with TCPGecko + Cafiine. (needs server running)");
+				PRINT_TEXT2(0, 11, "Press B to view guide.");
+				PRINT_TEXT2(0, 12, "Press X for credits.");
+				PRINT_TEXT2(0, 15, "Press Home to exit.");
 
 
 				PRINT_TEXT2(8 + 4 * sel_ip, 3, "vvv");
@@ -204,15 +201,15 @@ int Menu_Main()
 			}
 			else if (gui_mode == 1) // Credits
 			{
-				PRINT_TEXT2(0, 5, "* Maschell for HID to VPAD");
-				PRINT_TEXT2(0, 6, "* Dimok for function_hooks and the pygecko server");
-				PRINT_TEXT2(0, 7, "* brienj for the IP selector and initial UI");
-				PRINT_TEXT2(0, 8, "* amiibu for help with the PHP downloader script");
-				PRINT_TEXT2(0, 9, "* seresaa for the banner and Geckiine Creator");
-				PRINT_TEXT2(0, 10, "* 466 for web hosting");
-				PRINT_TEXT2(0, 11, "* /u/MachMatic for the banner background");
-				PRINT_TEXT2(0, 13, "* OatmealDome and Yahya14 for Swap DRC");
-				PRINT_TEXT2(0, 14, "Press X to return to the IP selector.");
+				PRINT_TEXT2(0, 3, "Creators:");
+				PRINT_TEXT2(2, 5, "* Oatmealdome and Yahya14");
+				PRINT_TEXT2(0, 7, "Special Thanks:");
+				PRINT_TEXT2(2, 9, "* Maschell for HID to VPAD");
+				PRINT_TEXT2(2, 10, "* Dimok for function_hooks and the pygecko server");
+				PRINT_TEXT2(2, 11, "* brienj for the IP selector and initial UI");
+				PRINT_TEXT2(2, 12, "* /u/MachMatic for the banner background");
+				PRINT_TEXT2(2, 13, "* BKOOL999 for testing the Swap DRC app");
+				PRINT_TEXT2(0, 15, "Press B to return to the menu.");
 			}
 
 			else if (gui_mode == 2) // Guide
@@ -232,11 +229,11 @@ int Menu_Main()
 
 				PRINT_TEXT2(0, 1, " |||");
 				PRINT_TEXT2(0, 2, " vvv");
-				PRINT_TEXT2(0,10, "                                 <---");
+				PRINT_TEXT2(0,10, "                                <---");
 
 
-				PRINT_TEXT2(0,13, "Hold L then press Minus to swap screens.");
-				PRINT_TEXT2(0, 15, "Press B to return to the IP selector.");
+				PRINT_TEXT2(0,13, "Hold L then press Minus to swap displays.");
+				PRINT_TEXT2(0, 15, "Press B to return to the menu.");
 
 				
 			}
@@ -366,6 +363,3 @@ int Menu_Main()
 
 	return EXIT_RELAUNCH_ON_LOAD;
 }
-
-
-

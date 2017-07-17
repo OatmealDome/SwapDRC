@@ -19,9 +19,9 @@ If you're playing with Splatoon's enhanced swapping controls;
 
 * An SD card
 * The Homebrew Launcher ([Haxchi](https://gbatemp.net/threads/haxchi-v2-0-a-persistent-wiiu-hack.451071/) or [Loadiine.ovh](http://loadiine.ovh) method)
-* A Wii U (on firmware version 5.1.1, lower verions aren't tested)
+* A Wii U (on firmware version 5.1.1, lower versions aren't tested)
 * (Optional) A cafiine server (examples: [the original by Chadderz and MrRean](https://github.com/MrRean/Cafiine-410-551/blob/master/server/cafiine_server.exe), [MusicRandomizer](https://github.com/OatmealDome/SplatoonUtilities/blob/master/MusicRandomizer/README.md), [Ray's custom server](https://github.com/Syroot/CafiineServer), and more)
-* (Optional) Your Wii U IP for TCPGecko or your computer's local IP for Cafiine ([Windows](http://www.nirsoft.net/utils/wnetwatcher.zip), [macOS](http://osxdaily.com/2010/11/21/find-ip-address-mac/))
+* (Optional) Your Wii U's IP for TCPGecko or your computer's local IP for Cafiine ([Windows](http://www.nirsoft.net/utils/wnetwatcher.zip), [macOS](http://osxdaily.com/2010/11/21/find-ip-address-mac/))
 * For Splatoon's enhanced controls; ver 2.10.0 - 2.12.0
 
 
@@ -42,7 +42,7 @@ If you're playing with Splatoon's enhanced swapping controls;
 
 3. Safely remove the SD card and insert it into your wii u, then launch the hombrew launcher from [loadiine.ovh](http://loadiine.ovh) in your Wii U browser. If you have the [haxchi](https://gbatemp.net/threads/haxchi-v2-0-a-persistent-wiiu-hack.451071/) homebrew launcher, that works too.
 
-4. Press **A** to install Swap DRC with TCPGecko, or press **B** to install Swap DRC with TCPGecko + Cafiine (cafiine server on your computer required)
+4. Press **A** to install Swap DRC with TCPGecko, or press **B** to install Swap DRC with TCPGecko + Cafiine (cafiine server on your computer is required)
 
 5. You're done! You now switch displays anywhere but not in the settings menu (because it terminates any mod installers like it always does).
 
