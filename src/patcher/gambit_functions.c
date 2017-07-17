@@ -15,7 +15,7 @@ void gambitDRC()
 {
 	if (*inkstrikeEq == 2 && *spTimer != 0)
 		swapForce = 1;
-	else if (AButton)
+	else if (AButton && *ptr2 > 0x1C000000)
 		swapForce = 1;
 	else
 		swapForce = 0;
