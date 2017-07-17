@@ -228,7 +228,6 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
 	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L)
 	{
 		drcMode = !drcMode;
-		log_printf("isSplatoon Address: %p\n", (void*)&isSplatoon);
 		// enable/disable sensor bar
 		VPADSetSensorBar(chan, drcMode);
 	}
