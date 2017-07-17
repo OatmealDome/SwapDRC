@@ -108,6 +108,7 @@ extern void (* VPADGetTPCalibratedPoint)(int chan, VPADTPData *screen, VPADTPDat
 extern void (* VPADGetTPCalibratedPointEx)(int chan, int resolution, VPADTPData *screen, VPADTPData *raw);
 extern int (* VPADBASEGetMotorOnRemainingCount)(int lcdmode);
 extern int (* VPADBASESetMotorOnRemainingCount)(int lcdmode,int counter);
+extern void (* VPADSetSensorBar)(s32 chan, bool on);
 
 #ifdef __cplusplus
 }

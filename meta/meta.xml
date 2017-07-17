@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="true"?>
 <app version="1.1">
-    <name>geckiine</name>
-    <coder>multiple people</coder>
-	<url>https://github.com/xhp-creations/Geckiine</url>
-    <version> 1.1</version>
-    <release_date>201607080000000</release_date>
-    <short_description>TCPGecko and Cafiine combined</short_description>
-	<long_description>This tool installs both TCPGecko and Cafiine into system memory so that you can use them at the same time.
+    <name>Swap DRC</name>
+    <coder>OatmealDome and Yahya14</coder>
+	<url>TBA</url>
+    <version>1.0</version>
+    <release_date>201707190000000</release_date>
+    <short_description>Switch TV display onto the gamepad</short_description>
+	<long_description>This tool installs Swap DRC, TCPGecko, and/or Cafiine into system memory.
+    
+Switch the TV and gamepad display (and the DRC sensor bar) by holding the L shoulder button, and then press MINUS.
 		
-		Special thanks to: Maschell, dimok, NWPlayer123, amibu, seresaa, /u/MachMatic, and brienj!
-		
-		OatmealDome says, "Shoutouts to everyone at the Splatoon Modding Hub Discord, because I probably annoyed them by talking endlessly about the various problems I encountered."</long_description>
+	Special thanks to: Maschell, dimok, NWPlayer123, Brienj, and BKOOL999!
+		</long_description>
 </app>

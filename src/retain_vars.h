@@ -5,7 +5,14 @@
 
 extern int isSplatoon;
 extern int drcMode;
-extern int screenPressTimeout;
+extern int patched;
+
+// for Splatoon
 extern uint32_t* gamemode;
+extern uint32_t* inkstrikeEq;
+extern uint32_t* spTimer;
+
+extern uint32_t incrementVal;
+extern uint32_t* incrementPtr;
 
 #endif // _RETAIN_VARS_H_

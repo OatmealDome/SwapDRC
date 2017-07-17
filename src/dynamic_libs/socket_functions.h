@@ -76,7 +76,7 @@ struct sockaddr
    char sa_data[14];
 };
 
-unsigned int new_addr;
+extern unsigned int new_addr;
 
 void InitSocketFunctionPointers(void);
 void InitAcquireSocket(void);
