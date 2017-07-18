@@ -15,7 +15,7 @@ void gambitDRC()
 {
 	if (*inkstrikeEq == 2 && *spTimer != 0)
 		swapForce = 1;
-	else if (AButton && *ptr2 > 0x1C000000)
+	else if (AButton)
 		swapForce = 1;
 	else
 		swapForce = 0;
@@ -134,6 +134,10 @@ void gambitPatches(VPADData *buffer)
 				AButton = false;
 				touchVal = D_NEUTRAL;
 			}
+		}
+		else
+		{
+			AButton = false;
 		}
 	}
 }
