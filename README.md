@@ -19,7 +19,7 @@ If you're playing with Splatoon's enhanced swapping controls:
 
 * An SD card
 * The Homebrew Launcher ([Haxchi](https://gbatemp.net/threads/haxchi-v2-0-a-persistent-wiiu-hack.451071/) or [Loadiine.ovh](http://loadiine.ovh) method)
-* A Wii U (on firmware version 5.1.1, lower versions aren't tested)
+* A Wii U (on firmware version 5.5.1, 5.5.2 and lower versions aren't tested but may work)
 * (Optional) A cafiine server (examples: [the original by Chadderz and MrRean](https://github.com/MrRean/Cafiine-410-551/blob/master/server/cafiine_server.exe), [MusicRandomizer](https://github.com/OatmealDome/SplatoonUtilities/blob/master/MusicRandomizer/README.md), [Ray's custom server](https://github.com/Syroot/CafiineServer), and more)
 * (Optional) Your Wii U's IP for TCPGecko or your computer's local IP for Cafiine ([Windows](http://www.nirsoft.net/utils/wnetwatcher.zip), [macOS](http://osxdaily.com/2010/11/21/find-ip-address-mac/))
 * For Splatoon's enhanced controls: ver 2.10.0 - 2.12.0
