@@ -2,10 +2,15 @@
 #define _RETAIN_VARS_H_
 
 #include "common/types.h"
+#include "utils/voice_info.h"
+
 
 extern int isSplatoon;
 extern int drcMode;
 extern int patched;
+
+// AX
+extern VoiceInfo gVoiceInfos[VOICE_INFO_MAX];
 
 // for Splatoon
 extern uint32_t* gamemode;

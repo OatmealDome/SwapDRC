@@ -6,6 +6,7 @@
 #include "main.h"
 #include "dynamic_libs/os_functions.h"
 #include "dynamic_libs/gx2_functions.h"
+#include "dynamic_libs/ax_functions.h"
 #include "dynamic_libs/socket_functions.h"
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/fs_functions.h"
@@ -97,10 +98,14 @@ int Menu_Main()
 	InitSysFunctionPointers();
 	InitFSFunctionPointers();
 	InitVPadFunctionPointers();
+	InitAXFunctionPointers();
+
 	
 	log_init("192.168.2.18");
 	
 	SetupKernelCallback();
+
+	memset(gVoiceInfos, 0, sizeof(gVoiceInfos));
 	
 	log_printf("Geckiine started (rpx = '%s')\n", cosAppXmlInfoStruct.rpx_name);
 	

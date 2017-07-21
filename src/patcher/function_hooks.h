@@ -14,6 +14,8 @@ struct fs_async_t {
 	void *queue;
 };
 
+extern void swapVoices();
+
 int swapForce;
 void PatchMethodHooks(void);
 void RestoreInstructions(void);

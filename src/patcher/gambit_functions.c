@@ -93,7 +93,11 @@ void gambitPatches(VPADData *buffer)
 			// switch if B is pressed
 			if (buffer->btns_d & VPAD_BUTTON_B)
 			{
+				// swap drc modes
 				drcMode = !drcMode;
+
+				// swap audio
+				swapVoices();
 
 				// enable/disable sensor bar
 				VPADSetSensorBar(0, drcMode);

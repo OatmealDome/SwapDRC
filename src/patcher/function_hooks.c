@@ -6,12 +6,14 @@
 #include "common/loader_defs.h"
 #include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/os_functions.h"
+#include "dynamic_libs/ax_functions.h"
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/vpad_functions.h"
 #include "kernel/kernel_functions.h"
 #include "function_hooks.h"
 #include "utils/logger.h"
+#include "utils/voice_swapper.h"
 #include "cafiine/cafiine.h"
 #include "retain_vars.h"
 #include "gambit_functions.h"
@@ -27,6 +29,130 @@
         res my_ ## name(__VA_ARGS__)
 
 int swapForce = 0;
+
+// AX FUNCTIONS
+DECL(s32, AXSetVoiceDeviceMixOld, void *v, s32 device, u32 id, void *mix) {
+	if (drcMode) device = (device == 1) ? 0 : 1;
+	if (VOICE_SWAP_LOG == 1) { log_printf("AXSetVoiceDeviceMixOld voice: %08X device: %d, mix: %08X\n", v, device, mix); }
+	setMix(v, device, mix);
+	return real_AXSetVoiceDeviceMixOld(v, device, id, mix);
+}
+
+DECL(s32, AXSetVoiceDeviceMix, void *v, s32 device, u32 id, void *mix) {
+	if (drcMode) device = (device == 1) ? 0 : 1;
+	if (VOICE_SWAP_LOG == 1) { log_printf("AXSetVoiceDeviceMix voice: %08X device: %d, mix: %08X\n", v, device, mix); }
+	setMix(v, device, mix);
+	return real_AXSetVoiceDeviceMix(v, device, id, mix);
+}
+
+DECL(void *, AXAcquireVoiceExOld, u32 prio, void * callback, u32 arg) {
+	void * result = real_AXAcquireVoiceExOld(prio, callback, arg);
+	if (VOICE_SWAP_LOG == 1) { log_printf("AXAcquireVoiceExOld result: %08X \n", result); }
+	acquireVoice(result);
+	return result;
+}
+
+DECL(void *, AXAcquireVoiceEx, u32 prio, void * callback, u32 arg) {
+	void * result = real_AXAcquireVoiceEx(prio, callback, arg);
+	if (VOICE_SWAP_LOG == 1) { log_printf("AXAcquireVoiceEx result: %08X \n", result); }
+	acquireVoice(result);
+	return result;
+}
+
+DECL(void, AXFreeVoiceOld, void *v) {
+	if (VOICE_SWAP_LOG == 1) { log_printf("AXFreeVoiceOld v: %08X \n", v); }
+	freeVoice(v);
+	real_AXFreeVoiceOld(v);
+}
+
+DECL(void, AXFreeVoice, void *v) {
+	if (VOICE_SWAP_LOG == 1) { log_printf("AXFreeVoice v: %08X \n", v); }
+	freeVoice(v);
+	real_AXFreeVoice(v);
+}
+
+void swapVoices()
+{
+	swapAll();
+	for (int i = 0; i<VOICE_INFO_MAX; i++) {
+		if (gVoiceInfos[i].voice == NULL) continue;
+
+		real_AXSetVoiceDeviceMix(gVoiceInfos[i].voice, 0, 0, gVoiceInfos[i].mixTV);
+		real_AXSetVoiceDeviceMix(gVoiceInfos[i].voice, 1, 0, gVoiceInfos[i].mixDRC);
+		real_AXSetVoiceDeviceMixOld(gVoiceInfos[i].voice, 0, 0, gVoiceInfos[i].mixTV);
+		real_AXSetVoiceDeviceMixOld(gVoiceInfos[i].voice, 1, 0, gVoiceInfos[i].mixDRC);
+	}
+}
+
+// GX2 FUNCTIONS
+DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan_target)
+{
+	// GX2 destinations:
+	// 0x1 = TV
+	// 0x4 = 1st GamePad
+
+	// drcMode values:
+	// 0x0 = normal
+	// 0x1 = swap
+
+	// check drc swap and force the drcMode to default when inkstrike is activated
+	if (drcMode == 0 || swapForce)
+	{
+		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
+	}
+	else
+	{
+		switch (scan_target)
+		{
+		case 0x1:
+			real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x4);
+			break;
+		case 0x4:
+			real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x1);
+			break;
+		}
+	}
+}
+
+//VPAD FUNCTIONS
+DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
+{
+	// switch on L and SELECT
+	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L)
+	{
+		// swap drc modes
+		drcMode = !drcMode;
+
+		// swap audio
+		swapVoices();
+
+		// enable/disable sensor bar
+		VPADSetSensorBar(0, drcMode);
+	}
+
+	// patches splatoon enhanced controls
+	if (isSplatoon)
+	{
+		gambitPatches(buffer);
+		gambitDRC();
+	}
+
+	return real_VPADRead(chan, buffer, buffer_size, error);
+}
+
+DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw)
+{
+	real_VPADGetTPCalibratedPoint(chan, screen, raw);
+
+	if (isSplatoon)
+		// handles modified touch input for super jumps
+		gambitTouch(screen);
+}
+
+DECL(void, VPADSetSensorBar, s32 chan, bool on)
+{
+	real_VPADSetSensorBar(chan, on);
+}
 
 DECL(int, FSAInit, void) {
 	if ((int)bss_ptr == 0x0a000000) {
@@ -187,76 +313,11 @@ DECL(int, FSIsEof, void *pClient, void *pCmd, int fd, int error) {
 	return real_FSIsEof(pClient, pCmd, fd, error);
 }
 
-DECL(void, VPADSetSensorBar, s32 chan, bool on) {
-	real_VPADSetSensorBar(chan, on);
-}
-
-
-DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan_target)
-{
-    // GX2 destinations:
-    // 0x1 = TV
-    // 0x4 = 1st GamePad
-
-    // drcMode values:
-    // 0x0 = normal
-    // 0x1 = swap
-
-	// check drc swap and force the drcMode to default when inkstrike is activated
-	if (drcMode == 0 || swapForce)
-	{
-		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
-	}
-    else
-    {
-		switch (scan_target)
-		{
-		case 0x1:
-			real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x4);
-			break;
-		case 0x4:
-			real_GX2CopyColorBufferToScanBuffer(colorBuffer, 0x1);
-			break;
-		}
-    }
-}
-
-DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
-{
-
-	// switch on L and SELECT
-	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L)
-	{
-		drcMode = !drcMode;
-		// enable/disable sensor bar
-		VPADSetSensorBar(chan, drcMode);
-	}
-
-	// patches splatoon enhanced controls
-	if (isSplatoon)
-	{
-		gambitPatches(buffer);
-		gambitDRC();
-	}
-
-    return real_VPADRead(chan, buffer, buffer_size, error);
-}
-
-DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw)
-{
-    real_VPADGetTPCalibratedPoint(chan, screen, raw);
-
-	if (isSplatoon)
-	{
-		// handles modified touch input for super jumps
-		gambitTouch(screen);
-	}
-}
-
 /* *****************************************************************************
  * Creates function pointer array
  * ****************************************************************************/
 #define MAKE_MAGIC(x, lib,functionType) { (unsigned int) my_ ## x, (unsigned int) &real_ ## x, lib, # x,0,0,functionType,0}
+#define MAKE_MAGIC_NAME(x,y, lib,functionType) { (unsigned int) my_ ## x, (unsigned int) &real_ ## x, lib, # y,0,0,functionType,0}
 
 static struct hooks_magic_t {
 	const unsigned int replaceAddr;
@@ -287,7 +348,13 @@ static struct hooks_magic_t {
 	MAKE_MAGIC(GX2CopyColorBufferToScanBuffer, LIB_GX2, STATIC_FUNCTION),
 	MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
 	MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION),
-	MAKE_MAGIC(VPADSetSensorBar, LIB_VPAD, STATIC_FUNCTION)
+	MAKE_MAGIC(VPADSetSensorBar, LIB_VPAD, STATIC_FUNCTION),
+	MAKE_MAGIC_NAME(AXAcquireVoiceExOld,    AXAcquireVoiceEx,       LIB_AX_OLD,     STATIC_FUNCTION),
+	MAKE_MAGIC_NAME(AXFreeVoiceOld,         AXFreeVoice,            LIB_AX_OLD,     STATIC_FUNCTION),
+	MAKE_MAGIC_NAME(AXSetVoiceDeviceMixOld, AXSetVoiceDeviceMix,    LIB_AX_OLD,     STATIC_FUNCTION),
+	MAKE_MAGIC_NAME(AXAcquireVoiceEx,       AXAcquireVoiceEx,       LIB_AX,         DYNAMIC_FUNCTION),
+	MAKE_MAGIC_NAME(AXFreeVoice,            AXFreeVoice,            LIB_AX,         DYNAMIC_FUNCTION),
+	MAKE_MAGIC_NAME(AXSetVoiceDeviceMix,    AXSetVoiceDeviceMix,    LIB_AX,         DYNAMIC_FUNCTION),
 };
 
 
@@ -475,7 +542,15 @@ unsigned int GetAddressOfFunction(const char * functionName,unsigned int library
         log_printf("FindExport of %s! From LIB_VPAD\n", functionName);
         if(vpad_handle == 0){log_print("LIB_VPAD not aquired\n"); return 0;}
         rpl_handle = vpad_handle;
-    }
+    }else if (library == LIB_AX) {
+		log_printf("FindExport of %s! From LIB_AX\n", functionName);
+		if (sound_handle == 0) { log_print("LIB_AX not acquired\n"); return 0;}
+		rpl_handle = sound_handle;
+	}else if (library == LIB_AX_OLD) {
+		log_printf("FindExport of %s! From LIB_AX_OLD\n", functionName);
+		if (sound_handle_old == 0) { log_print("LIB_AX_OLD not acquired\n"); return 0; }
+		rpl_handle = sound_handle_old;
+	}
 
     if(!rpl_handle){
         log_printf("Failed to find the RPL handle for %s\n", functionName);
