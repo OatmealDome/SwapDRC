@@ -67,6 +67,8 @@ void gambitPatches(VPADData *buffer)
 	{
 		inkstrikeEq = (uint32_t*)0x10000000;
 		spTimer = (uint32_t*)0x10000000;
+		incrementPtr = (uint32_t*)0x10000000;
+		PCtrlPtr = (uint32_t*)0x10000000;
 	}
 	else
 	{
@@ -86,12 +88,14 @@ void gambitPatches(VPADData *buffer)
 
 		inkstrikeEq = (uint32_t*)(*ptr + 0x80);
 		spTimer = (uint32_t*)(*ptr + 0x808);
+		incrementPtr = (uint32_t*)(*ptr + 0x150);
+		PCtrlPtr = (uint32_t*)(*ptr + 0x798);
 
 		// check if in-game menu is up
 		if (*ptr2 > 0x1C000000)
 		{
 			// switch if B is pressed
-			if (buffer->btns_d & VPAD_BUTTON_B && AppInBackground)
+			if (buffer->btns_d & VPAD_BUTTON_B && AppInBackground && *incrementPtr != incrementVal && *PCtrlPtr < 0x01000000)
 			{
 				drcSwap();
 			}
@@ -131,6 +135,10 @@ void gambitPatches(VPADData *buffer)
 				AButton = false;
 				touchVal = D_NEUTRAL;
 			}
+
+			// reset increment value
+			incrementVal = *incrementPtr;
+
 		}
 		else
 		{

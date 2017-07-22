@@ -20,5 +20,6 @@ extern uint32_t* spTimer;
 
 extern uint32_t incrementVal;
 extern uint32_t* incrementPtr;
+extern uint32_t* PCtrlPtr;
 
 #endif // _RETAIN_VARS_H_

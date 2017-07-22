@@ -17,3 +17,4 @@ uint32_t* spTimer __attribute__((section(".data"))) = (uint32_t*)0x10000000;
 
 uint32_t incrementVal __attribute__((section(".data"))) = (uint32_t)0;
 uint32_t* incrementPtr __attribute__((section(".data"))) = (uint32_t*)0x10000000;
+uint32_t* PCtrlPtr __attribute__((section(".data"))) = (uint32_t*)0x10000000;
