@@ -11,6 +11,7 @@
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/fs_functions.h"
 #include "dynamic_libs/vpad_functions.h"
+#include "dynamic_libs/procui_functions.h"
 #include "utils/logger.h"
 #include "system/memory.h"
 #include "common/common.h"
@@ -24,7 +25,7 @@
 #define PRINT_TEXT2(x, y, ...) { snprintf(msg, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, msg); OSScreenPutFontEx(1, x, y, msg); }
 #define PRINT_TEXT3(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
 
-#define BUILD 1.0
+#define BUILD 1.1
 
 
 /* IP union */
@@ -76,6 +77,7 @@ void gambitBootScreen()
 	PRINT_TEXT2(55, 17, "| Point |");
 	PRINT_TEXT2(55, 17, " _______");
 
+	OSScreenFlipBuffersEx(0);
 	OSScreenFlipBuffersEx(1);
 
 	sleep(1);
@@ -99,6 +101,7 @@ int Menu_Main()
 	InitFSFunctionPointers();
 	InitVPadFunctionPointers();
 	InitAXFunctionPointers();
+	InitProcUIFunctionPointers();
 
 	
 	log_init("192.168.2.18");

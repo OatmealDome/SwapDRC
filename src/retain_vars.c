@@ -3,7 +3,9 @@
 
 int isSplatoon __attribute__((section(".data"))) = 0;
 int drcMode __attribute__((section(".data"))) = 0;
+int AppInBackground __attribute__((section(".data"))) = 1;
 int patched __attribute__((section(".data"))) = 0;
+
 uint32_t new_addr __attribute__((section(".data"))) = 0;
 VoiceInfo gVoiceInfos[VOICE_INFO_MAX] __attribute__((section(".data")));
 

@@ -52,7 +52,7 @@ void gambitTouch(VPADTPData *screen)
 	case D_NEUTRAL:
 		// disable touchscreen input if the TV is on the DRC for Splatoon enhanced controls
 		if ((drcMode == 0 || swapForce)) {}
-		else if (*ptr > 0x10000000)
+		else if (AppInBackground)
 		{
 			screen->touched = 0;
 		}
@@ -91,16 +91,9 @@ void gambitPatches(VPADData *buffer)
 		if (*ptr2 > 0x1C000000)
 		{
 			// switch if B is pressed
-			if (buffer->btns_d & VPAD_BUTTON_B)
+			if (buffer->btns_d & VPAD_BUTTON_B && AppInBackground)
 			{
-				// swap drc modes
-				drcMode = !drcMode;
-
-				// swap audio
-				swapVoices();
-
-				// enable/disable sensor bar
-				VPADSetSensorBar(0, drcMode);
+				drcSwap();
 			}
 
 			// force temporary default swap in a match

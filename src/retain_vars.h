@@ -8,6 +8,7 @@
 extern int isSplatoon;
 extern int drcMode;
 extern int patched;
+extern int AppInBackground;
 
 // AX
 extern VoiceInfo gVoiceInfos[VOICE_INFO_MAX];

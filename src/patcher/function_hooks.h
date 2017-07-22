@@ -15,6 +15,7 @@ struct fs_async_t {
 };
 
 extern void swapVoices();
+extern void drcSwap();
 
 int swapForce;
 void PatchMethodHooks(void);

@@ -10,6 +10,7 @@
 #include "dynamic_libs/sys_functions.h"
 #include "dynamic_libs/gx2_functions.h"
 #include "dynamic_libs/vpad_functions.h"
+#include "dynamic_libs/procui_functions.h"
 #include "kernel/kernel_functions.h"
 #include "function_hooks.h"
 #include "utils/logger.h"
@@ -74,9 +75,8 @@ DECL(void, AXFreeVoice, void *v) {
 void swapVoices()
 {
 	swapAll();
-	for (int i = 0; i<VOICE_INFO_MAX; i++) {
+	for (int i = 0; i < VOICE_INFO_MAX; i++) {
 		if (gVoiceInfos[i].voice == NULL) continue;
-
 		real_AXSetVoiceDeviceMix(gVoiceInfos[i].voice, 0, 0, gVoiceInfos[i].mixTV);
 		real_AXSetVoiceDeviceMix(gVoiceInfos[i].voice, 1, 0, gVoiceInfos[i].mixDRC);
 		real_AXSetVoiceDeviceMixOld(gVoiceInfos[i].voice, 0, 0, gVoiceInfos[i].mixTV);
@@ -118,16 +118,9 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
 DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
 {
 	// switch on L and SELECT
-	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L)
+	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L && AppInBackground)
 	{
-		// swap drc modes
-		drcMode = !drcMode;
-
-		// swap audio
-		swapVoices();
-
-		// enable/disable sensor bar
-		VPADSetSensorBar(0, drcMode);
+		drcSwap();
 	}
 
 	// patches splatoon enhanced controls
@@ -152,6 +145,30 @@ DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *r
 DECL(void, VPADSetSensorBar, s32 chan, bool on)
 {
 	real_VPADSetSensorBar(chan, on);
+}
+
+void drcSwap()
+{
+	// swap drc modes
+	drcMode = !drcMode;
+
+	// swap audio
+	swapVoices();
+
+	// enable/disable sensor bar
+	VPADSetSensorBar(0, drcMode);
+}
+
+//PROCUI FUNCTIONS
+DECL(u32, ProcUIProcessMessages, u32 u) {
+	u32 res = real_ProcUIProcessMessages(u);
+	if (res == 2) {
+		AppInBackground = 0;
+	}
+	else if (res == 0) {
+		AppInBackground = 1;
+	}
+	return res;
 }
 
 DECL(int, FSAInit, void) {
@@ -349,6 +366,7 @@ static struct hooks_magic_t {
 	MAKE_MAGIC(VPADRead, LIB_VPAD, STATIC_FUNCTION),
 	MAKE_MAGIC(VPADGetTPCalibratedPoint, LIB_VPAD, STATIC_FUNCTION),
 	MAKE_MAGIC(VPADSetSensorBar, LIB_VPAD, STATIC_FUNCTION),
+	MAKE_MAGIC(ProcUIProcessMessages, LIB_PROCUI, DYNAMIC_FUNCTION),
 	MAKE_MAGIC_NAME(AXAcquireVoiceExOld,    AXAcquireVoiceEx,       LIB_AX_OLD,     STATIC_FUNCTION),
 	MAKE_MAGIC_NAME(AXFreeVoiceOld,         AXFreeVoice,            LIB_AX_OLD,     STATIC_FUNCTION),
 	MAKE_MAGIC_NAME(AXSetVoiceDeviceMixOld, AXSetVoiceDeviceMix,    LIB_AX_OLD,     STATIC_FUNCTION),
@@ -542,7 +560,12 @@ unsigned int GetAddressOfFunction(const char * functionName,unsigned int library
         log_printf("FindExport of %s! From LIB_VPAD\n", functionName);
         if(vpad_handle == 0){log_print("LIB_VPAD not aquired\n"); return 0;}
         rpl_handle = vpad_handle;
-    }else if (library == LIB_AX) {
+    }else if (library == LIB_PROCUI) {
+		log_printf("FindExport of %s! From LIB_PROCUI\n", functionName);
+		if (vpad_handle == 0) { log_print("LIB_PROCUI not aquired\n"); return 0; }
+		rpl_handle = procui_handle;
+	}
+	else if (library == LIB_AX) {
 		log_printf("FindExport of %s! From LIB_AX\n", functionName);
 		if (sound_handle == 0) { log_print("LIB_AX not acquired\n"); return 0;}
 		rpl_handle = sound_handle;
