@@ -25,6 +25,7 @@
 #define PRINT_TEXT2(x, y, ...) { snprintf(msg, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, msg); OSScreenPutFontEx(1, x, y, msg); }
 #define PRINT_TEXT3(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
 
+#define DEBUG 0
 #define BUILD 1.1
 
 
@@ -103,8 +104,9 @@ int Menu_Main()
 	InitAXFunctionPointers();
 	InitProcUIFunctionPointers();
 
-	
-	log_init("192.168.2.18");
+	if (DEBUG) {
+		log_init("192.168.2.18");
+	}
 	
 	SetupKernelCallback();
 
@@ -240,7 +242,8 @@ int Menu_Main()
 				PRINT_TEXT2(0,10, "                                <---");
 
 
-				PRINT_TEXT2(0,13, "Hold L then press Minus to swap displays.");
+				PRINT_TEXT2(0, 13, "Hold L then press Minus to swap displays.");
+				PRINT_TEXT2(0, 14, "You can also press the TV button.");
 				PRINT_TEXT2(0, 15, "Press B to return to the menu.");
 
 				

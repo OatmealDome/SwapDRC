@@ -18,6 +18,7 @@ extern void swapVoices();
 extern void drcSwap();
 
 int swapForce;
+unsigned int homeCoolDown;
 void PatchMethodHooks(void);
 void RestoreInstructions(void);
 unsigned int GetAddressOfFunction(const char * functionName,unsigned int library);

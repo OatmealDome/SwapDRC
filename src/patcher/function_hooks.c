@@ -30,6 +30,7 @@
         res my_ ## name(__VA_ARGS__)
 
 int swapForce = 0;
+unsigned int homeCoolDown = 0;
 
 // AX FUNCTIONS
 DECL(s32, AXSetVoiceDeviceMixOld, void *v, s32 device, u32 id, void *mix) {
@@ -72,8 +73,7 @@ DECL(void, AXFreeVoice, void *v) {
 	real_AXFreeVoice(v);
 }
 
-void swapVoices()
-{
+void swapVoices() {
 	swapAll();
 	for (int i = 0; i < VOICE_INFO_MAX; i++) {
 		if (gVoiceInfos[i].voice == NULL) continue;
@@ -85,8 +85,7 @@ void swapVoices()
 }
 
 // GX2 FUNCTIONS
-DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan_target)
-{
+DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan_target) {
 	// GX2 destinations:
 	// 0x1 = TV
 	// 0x4 = 1st GamePad
@@ -96,12 +95,10 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
 	// 0x1 = swap
 
 	// check drc swap and force the drcMode to default when inkstrike is activated
-	if (drcMode == 0 || swapForce)
-	{
+	if (drcMode == 0 || swapForce) {
 		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 	}
-	else
-	{
+	else {
 		switch (scan_target)
 		{
 		case 0x1:
@@ -115,40 +112,46 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
 }
 
 //VPAD FUNCTIONS
-DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error)
-{
+DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error) {
+	int result = real_VPADRead(chan, buffer, buffer_size, error);
 	// switch on L and SELECT
-	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L && AppInBackground)
-	{
+	if (buffer->btns_d & VPAD_BUTTON_MINUS && buffer->btns_h & VPAD_BUTTON_L && AppInBackground) {
 		drcSwap();
 	}
 
+	// switch on TV button
+	if (buffer->btns_h & VPAD_BUTTON_TV && homeCoolDown == 0 && AppInBackground) {
+		homeCoolDown = 0x5A;
+		drcSwap();
+	}
+	else if (homeCoolDown > 0) {
+		homeCoolDown--;
+	}
+	
+
 	// patches splatoon enhanced controls
-	if (isSplatoon)
-	{
+	if (isSplatoon) {
 		gambitPatches(buffer);
 		gambitDRC();
 	}
 
-	return real_VPADRead(chan, buffer, buffer_size, error);
+	return result;
 }
 
-DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw)
-{
+DECL(void, VPADGetTPCalibratedPoint, int chan, VPADTPData *screen, VPADTPData *raw) {
 	real_VPADGetTPCalibratedPoint(chan, screen, raw);
 
-	if (isSplatoon)
+	if (isSplatoon) {
 		// handles modified touch input for super jumps
 		gambitTouch(screen);
+	}
 }
 
-DECL(void, VPADSetSensorBar, s32 chan, bool on)
-{
+DECL(void, VPADSetSensorBar, s32 chan, bool on){
 	real_VPADSetSensorBar(chan, on);
 }
 
-void drcSwap()
-{
+void drcSwap() {
 	// swap drc modes
 	drcMode = !drcMode;
 

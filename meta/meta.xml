@@ -3,12 +3,12 @@
     <name>Swap DRC</name>
     <coder>OatmealDome and Yahya14</coder>
 	<url>TBA</url>
-    <version>1.0</version>
+    <version>1.1</version>
     <release_date>201707190000000</release_date>
     <short_description>Switch TV display onto the gamepad</short_description>
 	<long_description>This tool installs Swap DRC, TCPGecko, and/or Cafiine into system memory.
     
-Switch the TV and gamepad display (and the DRC sensor bar) by holding the L shoulder button, and then press MINUS.
+Switch the TV and gamepad display (and the DRC sensor bar) by holding the L shoulder button, and then press MINUS. Pressing the TV button also works.
 		
 	Special thanks to: Maschell, dimok, NWPlayer123, Brienj, and BKOOL999!
 		</long_description>
