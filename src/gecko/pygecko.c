@@ -16,57 +16,6 @@ struct pygecko_bss_t {
 #define errno (*__gh_errno_ptr())
 #define EWOULDBLOCK     6
 
-/* Read a 32-bit word with kernel permissions */
-uint32_t __attribute__ ((noinline)) kern_read(const void *addr)
-{
-	uint32_t result;
-	asm volatile (
-				  "li 3,1\n"
-				  "li 4,0\n"
-				  "li 5,0\n"
-				  "li 6,0\n"
-				  "li 7,0\n"
-				  "lis 8,1\n"
-				  "mr 9,%1\n"
-				  "li 0,0x3400\n"
-				  "mr %0,1\n"
-				  "sc\n"
-				  "nop\n"
-				  "mr 1,%0\n"
-				  "mr %0,3\n"
-				  :	"=r"(result)
-				  :	"b"(addr)
-				  :	"memory", "ctr", "lr", "0", "3", "4", "5", "6", "7", "8", "9", "10",
-				  "11", "12"
-				  );
-	
-	return result;
-}
-
-/* Write a 32-bit word with kernel permissions */
-void __attribute__ ((noinline)) kern_write(void *addr, uint32_t value)
-{
-	asm volatile (
-				  "li 3,1\n"
-				  "li 4,0\n"
-				  "mr 5,%1\n"
-				  "li 6,0\n"
-				  "li 7,0\n"
-				  "lis 8,1\n"
-				  "mr 9,%0\n"
-				  "mr %1,1\n"
-				  "li 0,0x3500\n"
-				  "sc\n"
-				  "nop\n"
-				  "mr 1,%1\n"
-				  :
-				  :	"r"(addr), "r"(value)
-				  :	"memory", "ctr", "lr", "0", "3", "4", "5", "6", "7", "8", "9", "10",
-				  "11", "12"
-				  );
-}
-
-
 static int recvwait(struct pygecko_bss_t *bss, int sock, void *buffer, int len) {
 	int ret;
 	while (len > 0) {
@@ -425,7 +374,7 @@ error:
         clientfd = -1;
         sockfd = -1;
 		bss->error = ret;
-		usleep(100000);
+		os_usleep(100000);
 	}
 	return 0;
 }

@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "dynamic_libs/vpad_functions.h"
+#include "patcher/vpad_function_patcher.h"
 #include "retain_vars.h"
 #include "utils/logger.h"
 #include "gambit_functions.h"
-#include "function_hooks.h"
 
 uint32_t* ptr = (uint32_t*)0x106E46E8;
 uint32_t* ptr2 = (uint32_t*)0x106E4DA8;
@@ -14,11 +14,11 @@ int touchVal = 0;
 void gambitDRC()
 {
 	if (*inkstrikeEq == 2 && *spTimer != 0)
-		swapForce = 1;
+		gSwapForce = 1;
 	else if (AButton)
-		swapForce = 1;
+		gSwapForce = 1;
 	else
-		swapForce = 0;
+		gSwapForce = 0;
 }
 
 void gambitTouch(VPADTPData *screen)
@@ -51,8 +51,8 @@ void gambitTouch(VPADTPData *screen)
 		break;
 	case D_NEUTRAL:
 		// disable touchscreen input if the TV is on the DRC for Splatoon enhanced controls
-		if ((drcMode == 0 || swapForce)) {}
-		else if (AppInBackground)
+		if ((drcMode == 0 || gSwapForce)) {}
+		else if (gAppStatus != 2)
 		{
 			screen->touched = 0;
 		}
@@ -95,7 +95,7 @@ void gambitPatches(VPADData *buffer)
 		if (*ptr2 > 0x1C000000)
 		{
 			// switch if B is pressed
-			if (buffer->btns_d & VPAD_BUTTON_B && AppInBackground && *incrementPtr != incrementVal && *PCtrlPtr < 0x01000000)
+			if (buffer->btns_d & VPAD_BUTTON_B && (gAppStatus != 0) && *incrementPtr != incrementVal && *PCtrlPtr < 0x01000000)
 			{
 				drcSwap();
 			}
