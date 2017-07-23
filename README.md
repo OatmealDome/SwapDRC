@@ -4,7 +4,7 @@ Introducing Swap DRC, a homebrew application that allows you to play TV-only Wii
 
 Swap DRC works by switching the display buffers for the TV and the GamePad with a press of a button. This app also includes the TCPGecko and Cafiine installers for other mods or hacks. The GamePad sensor bar can also be turned on when the TV display is on the GamePad screen, so playing with Wiimotes with just the GamePad is possible.
 
-Note that this mod has no audio swapping support, so you should use headphones to listen to the game audio if the software requires it.
+Update v1.1: Audio swapping support is now available!
 
 ## Instructions
 
@@ -79,7 +79,7 @@ If you're playing with Splatoon's enhanced swapping controls:
 
 ### Special thanks:
 
-+ Maschell for HID to VPAD
++ Maschell for HID to VPAD and the audio swap
 + Dimok for function_hooks and the pygecko server
 + Brienj for the IP selector and initial UI
 + /u/MachMatic for the banner background
