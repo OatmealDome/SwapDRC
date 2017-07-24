@@ -12,11 +12,16 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error) {
 	int result = real_VPADRead(chan, buffer, buffer_size, error);
 	if(result <= 0) return result;
 
-	// switch on L and SELECT
-	if ((((buffer[0].btns_h  & (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) == (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) ||
-       ((buffer[0].btns_h & VPAD_BUTTON_TV) == VPAD_BUTTON_TV)) &&
-            gHomeCoolDown == 0 && (gAppStatus != 2)) {
-        gHomeCoolDown = 0x5A;
+	uint32_t bCombo[2] = {
+		buffer[0].btns_h  & (VPAD_BUTTON_MINUS | VPAD_BUTTON_L),
+		buffer[0].btns_h & VPAD_BUTTON_TV
+	};
+
+	// switch on L and SELECT and TV button
+	if (((bCombo[0] == (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) ||
+		(bCombo[1] == VPAD_BUTTON_TV)) && (
+		gHomeCoolDown == 0 && (gAppStatus != 2))) {
+        gHomeCoolDown = bCombo[0]? 0x20 : 0x5A;
 		drcSwap();
 	}
 	else if (gHomeCoolDown > 0) {

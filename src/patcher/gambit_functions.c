@@ -95,7 +95,7 @@ void gambitPatches(VPADData *buffer)
 		if (*ptr2 > 0x1C000000)
 		{
 			// switch if B is pressed
-			if (buffer->btns_d & VPAD_BUTTON_B && (gAppStatus != 0) && *incrementPtr != incrementVal && *PCtrlPtr < 0x01000000)
+			if (buffer->btns_d & VPAD_BUTTON_B && (gAppStatus != 2) && *incrementPtr != incrementVal && *PCtrlPtr < 0x01000000)
 			{
 				drcSwap();
 			}
