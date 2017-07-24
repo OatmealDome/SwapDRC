@@ -27,7 +27,7 @@ extern "C" {
 #define LIB_SYSHID              12
 #define LIB_VPADBASE            13
 #define LIB_AX_OLD              14
-#define LIB_PROCUI              15
+#define LIB_PROC_UI             15
 
 // functions types
 #define STATIC_FUNCTION         0

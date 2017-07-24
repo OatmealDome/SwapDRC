@@ -4,11 +4,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	
+
 #define MAX_CLIENT 32
-	
+
 #define CHECK_ERROR(cond) if (cond) { goto error; }
-	
+
+#define MASK_FD 0x0fff00ff
+
 #define BYTE_NORMAL 0xff
 #define BYTE_SPECIAL 0xfe
 #define BYTE_OPEN 0x00
@@ -19,18 +21,7 @@ extern "C" {
 #define BYTE_STATFILE 0x05
 #define BYTE_EOF 0x06
 #define BYTE_GETPOS 0x07
-	
-struct bss_t {
-	int socket_fsa[MAX_CLIENT];
-	void *pClient_fs[MAX_CLIENT];
-	int socket_fs[MAX_CLIENT];
-	volatile int lock;
-};
-	
-#define bss_ptr (*(struct bss_t **)0x100000e4)
-#define bss (*bss_ptr)
 
-void memset_bss();
 void cafiine_connect(void *pClient, int clientId, int isFSA);
 void cafiine_disconnect(void *pClient, int clientId, int isFSA);
 int cafiine_handshake(int sock);
