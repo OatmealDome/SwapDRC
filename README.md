@@ -79,7 +79,7 @@ If you're playing with Splatoon's enhanced swapping controls:
 
 ### Special thanks:
 
-+ Maschell for HID to VPAD and the audio swap
++ Maschell for development contribution and the audio swap
 + Dimok for function_hooks and the pygecko server
 + Brienj for the IP selector and initial UI
 + /u/MachMatic for the banner background

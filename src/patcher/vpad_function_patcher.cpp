@@ -21,7 +21,7 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error) {
 	if (((bCombo[0] == (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) ||
 		(bCombo[1] == VPAD_BUTTON_TV)) && (
 		gHomeCoolDown == 0 && (gAppStatus != 2))) {
-        gHomeCoolDown = bCombo[0]? 0x20 : 0x5A;
+        gHomeCoolDown = bCombo[0]? 0x1E : 0x48;
 		drcSwap();
 	}
 	else if (gHomeCoolDown > 0) {

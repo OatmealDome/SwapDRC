@@ -16,7 +16,7 @@ DECL(void, GX2CopyColorBufferToScanBuffer, GX2ColorBuffer *colorBuffer, s32 scan
 	// 0x1 = swap
 
 	// check drc swap and force the drcMode to default when inkstrike is activated
-	if (drcMode == 0 || gSwapForce) {
+	if (drcMode == 0 || gSwapForce || gAppStatus == 2) {
 		real_GX2CopyColorBufferToScanBuffer(colorBuffer, scan_target);
 	}
 	else {

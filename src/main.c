@@ -208,8 +208,8 @@ int Menu_Main()
                 PRINT_TEXT2(0, 3, "Creators:");
                 PRINT_TEXT2(2, 5, "* Oatmealdome and Yahya14");
                 PRINT_TEXT2(0, 7, "Special Thanks:");
-                PRINT_TEXT2(2, 9, "* Maschell for HID to VPAD and the audio swap");
-                PRINT_TEXT2(2, 10, "* Dimok for function_hooks and the pygecko server");
+                PRINT_TEXT2(2, 9, "* Maschell for development contribution and the audio swap");
+                PRINT_TEXT2(2, 10, "* Dimok, Chadderz, etc for function_hooks and pygecko");
                 PRINT_TEXT2(2, 11, "* brienj for the IP selector and initial UI");
                 PRINT_TEXT2(2, 12, "* /u/MachMatic for the banner background");
                 PRINT_TEXT2(2, 13, "* BKOOL999 for testing the Swap DRC app");
