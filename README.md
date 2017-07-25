@@ -1,8 +1,8 @@
-# Swap DRC for TV-Only Wii U Games
+# SwapDRC for TV-Only Wii U Games
 
-Introducing Swap DRC, a homebrew application that allows you to play TV-only Wii U games on your GamePad screen.
+Introducing SwapDRC, a homebrew application that allows you to play TV-only Wii U games on your GamePad screen.
 
-Swap DRC works by switching the display buffers for the TV and the GamePad with a press of a button. This app also includes the TCPGecko and Cafiine installers for other mods or hacks. The GamePad sensor bar can also be turned on when the TV display is on the GamePad screen, so playing with Wiimotes with just the GamePad is possible.
+SwapDRC works by switching the display buffers for the TV and the GamePad with a press of a button. This app also includes the TCPGecko and Cafiine installers for other mods or hacks. The GamePad sensor bar can also be turned on when the TV display is on the GamePad screen, so playing with Wiimotes with just the GamePad is possible.
 
 Update v1.1: Audio swapping support is now available!
 
@@ -12,6 +12,14 @@ To swap the TV and GamePad screens, press and hold the **L shoulder button**, th
 
 If you're playing with Splatoon's enhanced swapping controls:
 
+#### Switch Display, Audio, and Gamepad Sensor Bar:
++ Press L and Minus together.
++ Press the TV button.
+
+#### Switch on/off Gamepad LCD:
++ Press and hold R-Stick for 3 seconds.
+
+#### Splatoon's Enhanced Controls:
 + Press **B** to switch screens except in-game menus.
 + Hold **A** + **D-Pad** in any direction to super jump to a teammate or the spawn point during a match.
 
@@ -42,7 +50,7 @@ If you're playing with Splatoon's enhanced swapping controls:
 
 3. Safely remove the SD card and insert it into your Wii U, then launch the Homebrew Launcher from the [Loadiine.ovh](http://loadiine.ovh) website in your Wii U browser. If you have the [Haxchi](https://gbatemp.net/threads/haxchi-v2-0-a-persistent-wiiu-hack.451071/) Homebrew Launcher, that works too.
 
-4. Press **A** to install Swap DRC with TCPGecko, or press **Y** to install Swap DRC with TCPGecko + Cafiine (a cafiine server on your computer is required)
+4. Launch SwapDRC, then press **A** to install SwapDRC with TCPGecko, or press **Y** to install SwapDRC with TCPGecko + Cafiine (a cafiine server on your computer is required)
 
 5. You're done! You can now switch displays anywhere (but not in the settings menu, as it re-launches the entire System Menu).
 
@@ -59,7 +67,7 @@ If you're playing with Splatoon's enhanced swapping controls:
     "Install TCPGecko only" option, Cafiine requires you to have a server running on your computer at all
     times. Don't use this if you don't want to use game file mods and have the computer running all the time.
     
-### Can I get you banned playing online with Swap DRC in any game?
+### Can I get you banned playing online with SwapDRC in any game?
 
     Swapping displays doesn't modify the games directly but through CafeOS instead. Therefore, it is 100%
     safe. However, you can still get banned with TCPGecko and/or Caffine mods if you don't use them properly.
@@ -83,4 +91,4 @@ If you're playing with Splatoon's enhanced swapping controls:
 + Dimok for function_hooks and the pygecko server
 + Brienj for the IP selector and initial UI
 + /u/MachMatic for the banner background
-+ BKOOL999 for feedback & testing the Swap DRC app
++ BKOOL999 for feedback & testing the SwapDRC app

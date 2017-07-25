@@ -29,7 +29,7 @@
 #define PRINT_TEXT2(x, y, ...) { snprintf(msg, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, msg); OSScreenPutFontEx(1, x, y, msg); }
 #define PRINT_TEXT3(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
 
-#define BUILD 1.2
+#define BUILD 1.3
 
 u8 isFirstBoot __attribute__((section(".data"))) = 1;
 
@@ -187,7 +187,7 @@ int Menu_Main()
             VPADRead(0, &vpad_data, 1, &error);
 
             // Title
-            PRINT_TEXT2(20, 1, "-- Swap DRC v%.1f --", BUILD);
+            PRINT_TEXT2(21, 1, "-- SwapDRC v%.1f --", BUILD);
 
             if (gui_mode == 0) // IP selector
             {
@@ -195,7 +195,7 @@ int Menu_Main()
                 PRINT_TEXT2(0, 6, "Use the D-Pad to enter in your computer's IP address for Cafiine.");
                 PRINT_TEXT2(0, 8, "Press A to install with TCPGecko.");
                 PRINT_TEXT2(0, 9, "Press Y to install with TCPGecko + Cafiine. (needs server running)");
-                PRINT_TEXT2(0, 11, "Press B to view guide.");
+                PRINT_TEXT2(0, 11, "Press B to view quick guide.");
                 PRINT_TEXT2(0, 12, "Press X for credits.");
                 PRINT_TEXT2(0, 15, "Press Home to exit.");
 
@@ -206,41 +206,28 @@ int Menu_Main()
             else if (gui_mode == 1) // Credits
             {
                 PRINT_TEXT2(0, 3, "Creators:");
-                PRINT_TEXT2(2, 5, "* Oatmealdome and Yahya14");
+                PRINT_TEXT2(2, 5, "* OatmealDome and Yahya14");
                 PRINT_TEXT2(0, 7, "Special Thanks:");
                 PRINT_TEXT2(2, 9, "* Maschell for development contribution and the audio swap");
                 PRINT_TEXT2(2, 10, "* Dimok, Chadderz, etc for function_hooks and pygecko");
                 PRINT_TEXT2(2, 11, "* brienj for the IP selector and initial UI");
                 PRINT_TEXT2(2, 12, "* /u/MachMatic for the banner background");
-                PRINT_TEXT2(2, 13, "* BKOOL999 for testing the Swap DRC app");
+                PRINT_TEXT2(2, 13, "* BKOOL999 for testing the SwapDRC app");
                 PRINT_TEXT2(0, 15, "Press B to return to the menu.");
             }
 
             else if (gui_mode == 2) // Guide
             {
-                PRINT_TEXT2(0, 2, " ___                               ___ ");
-                PRINT_TEXT2(0, 3, " ------------------------------------- ");
-                PRINT_TEXT2(0, 3, "/                                     \\");
-                PRINT_TEXT2(0, 4, "|          _________________          |");
-                PRINT_TEXT2(0, 5, "|    _    |                 |         |");
-                PRINT_TEXT2(0, 6, "|  _| |_  |                 |    O    |");
-                PRINT_TEXT2(0, 7, "| |_   _| |                 |  O   O  |");
-                PRINT_TEXT2(0, 8, "|   |_|   |                 |    O    |");
-                PRINT_TEXT2(0, 9, "|         |                 | +       |");
-                PRINT_TEXT2(0, 9, "|          _________________          |");
-                PRINT_TEXT2(0,10, "|                  ~          -       |");
-                PRINT_TEXT2(0,11, "|_____________________________________|");
+				PRINT_TEXT2(0, 3, "Switch Display, Audio, and Gamepad Sensor Bar:");
+                PRINT_TEXT2(2, 4, "* Press L and Minus together.");
+                PRINT_TEXT2(2, 5, "* Press the TV button.");
+				PRINT_TEXT2(0, 7, "Switch on/off Gamepad LCD:");
+				PRINT_TEXT2(2, 8, "* Press and hold R-Stick for 3 seconds.");
+				PRINT_TEXT2(0, 10, "Splatoon's Enhanced Controls:");
+				PRINT_TEXT2(2, 11, "* Press B to swap displays except in-game menus.");
+				PRINT_TEXT2(2, 12, "* Hold A + D-PAD to super jump to a teammate in a match.");
 
-                PRINT_TEXT2(0, 1, " |||");
-                PRINT_TEXT2(0, 2, " vvv");
-                PRINT_TEXT2(0,10, "                                <---");
-
-
-                PRINT_TEXT2(0, 13, "Hold L then press Minus to swap displays.");
-                PRINT_TEXT2(0, 14, "You can also press the TV button.");
                 PRINT_TEXT2(0, 15, "Press B to return to the menu.");
-
-
             }
 
             if ((vpad_data.btns_h & VPAD_BUTTON_A) && gui_mode == 0)

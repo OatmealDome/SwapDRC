@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <app version="1">
-    <name>Swap DRC</name>
+    <name>SwapDRC</name>
     <coder>OatmealDome and Yahya14</coder>
 	<url>https://gbatemp.net/threads/swap-drc-for-tv-only-wii-u-games.478026/#post-7458492</url>
-    <version>1.2</version>
+    <version>1.3</version>
     <release_date>201707190000000</release_date>
     <short_description>Switch TV display onto the gamepad</short_description>
-	<long_description>This tool installs Swap DRC TCPGecko and/or Cafiine into system memory.
+	<long_description>This tool installs SwapDRC, Padcon, TCPGecko and/or Cafiine into system memory.
     
 	Switch the TV and gamepad display and the DRC sensor bar by holding the L shoulder button and then press MINUS. Pressing the TV button also works.
 		
