@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app version="1">
+	<name>SwapDRC Lite</name>
+	<coder>OatmealDome and Yahya14</coder>
+	<url>https://gbatemp.net/threads/swap-drc-for-tv-only-wii-u-games.478026/#post-7458492</url>
+	<version>1.3</version>
+    <release_date>201707190000000</release_date>
+	<short_description>Switch TV display onto the gamepad</short_description>
+	<long_description>Switch Display, Audio, and Gamepad Sensor Bar:
+	- Press L and Minus together.
+	- Press the TV button.
+	
+	Switch on/off Gamepad LCD:
+	- Press and hold R-Stick for 3 seconds.
+	
+	Special thanks to: Maschell, dimok, NWPlayer123, Brienj, and BKOOL999.
+	</long_description>
+	<category>tool</category>
+</app>

@@ -1,6 +1,10 @@
 #ifndef _RETAIN_VARS_H_
 #define _RETAIN_VARS_H_
 
+//for pre-compiling the app
+#define LITE     0    // 0 = default, 1 = lite version (no tcpgecko and cafiine)
+
+
 #include "common/types.h"
 #include "utils/voice_info.hpp"
 #include "patcher/cafiine_function_patcher.h"

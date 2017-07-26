@@ -103,12 +103,15 @@ int Menu_Main()
 	InitSocketFunctionPointers();
 	InitGX2FunctionPointers();
 	InitSysFunctionPointers();
-	InitFSFunctionPointers();
 	InitVPadFunctionPointers();
 	InitAXFunctionPointers();
 	InitProcUIFunctionPointers();
+#if !LITE
+	InitFSFunctionPointers();
+#endif
 
-    log_init("192.168.0.181");
+
+    log_init("192.168.2.18");
 
 	SetupKernelCallback();
 
@@ -126,8 +129,11 @@ int Menu_Main()
     }
 
 	ApplyPatches();
+
+#if !LITE
 	log_printf("Starting the TCPGecko server.\n");
 	start_pygecko();
+#endif
 
 	if(!isInMiiMakerHBL()){ //Starting the application
         // Check for Splatoon (Gambit)
@@ -164,6 +170,27 @@ int Menu_Main()
 
         OSScreenEnableEx(0, 1);
         OSScreenEnableEx(1, 1);
+
+#if LITE
+		OSScreenClearBufferEx(0, 0);
+		OSScreenClearBufferEx(1, 0);
+
+		PRINT_TEXT2(0, 1, "SwapDRC Lite is now ready...");
+		PRINT_TEXT2(0, 3, "Tip: Swap screens with the TV button.");
+
+		OSScreenFlipBuffersEx(0);
+		OSScreenFlipBuffersEx(1);
+		os_sleep(2);
+
+		MEM1_free(screenBuffer);
+		screenBuffer = NULL;
+
+		memoryRelease();
+
+		isFirstBoot = 0;
+		SYSLaunchMenu();
+
+#else // LITE
 
         // Render IP selector and check for buttons
         u_serv_ip ip;
@@ -347,9 +374,11 @@ int Menu_Main()
 
         log_printf("Returning to application.\n");
         log_printf("De-initializing logging.\n");
+		log_deinit();
 
         isFirstBoot = 0;
         SYSLaunchMenu();
+#endif
     }
 	return EXIT_RELAUNCH_ON_LOAD;
 }
@@ -358,7 +387,9 @@ int Menu_Main()
     Patching all the functions!!!
 */
 void ApplyPatches(){
+#if !LITE
     PatchInvidualMethodHooks(method_hooks_cafiine,          method_hooks_size_cafiine,          method_calls_cafiine);
+#endif
     PatchInvidualMethodHooks(method_hooks_voice_swapping,   method_hooks_size_voice_swapping,   method_calls_voice_swapping);
     PatchInvidualMethodHooks(method_hooks_video_swapping,   method_hooks_size_video_swapping,   method_calls_video_swapping);
     PatchInvidualMethodHooks(method_hooks_vpad,             method_hooks_size_vpad,             method_calls_vpad);
