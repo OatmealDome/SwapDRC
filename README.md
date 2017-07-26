@@ -7,11 +7,6 @@ SwapDRC works by switching the display buffers for the TV and the GamePad with a
 Update v1.1: Audio swapping support is now available!
 
 ## Instructions
-
-To swap the TV and GamePad screens, press and hold the **L shoulder button**, then press **MINUS**. Pressing the button combination again will revert the displays back to normal.
-
-If you're playing with Splatoon's enhanced swapping controls:
-
 #### Switch Display, Audio, and Gamepad Sensor Bar:
 + Press L and Minus together.
 + Press the TV button.
