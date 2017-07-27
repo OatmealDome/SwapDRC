@@ -5,7 +5,7 @@
 int isSplatoon __attribute__((section(".data"))) = 0;
 int drcMode __attribute__((section(".data"))) = 0;
 uint32_t gAppStatus __attribute__((section(".data"))) = 0;
-int gHomeCoolDown  __attribute__((section(".data"))) = 0;
+int gCoolDown __attribute__((section(".data"))) = 0;
 int gLCDDelay __attribute__((section(".data"))) = 0;
 s32 gLCDMode __attribute__((section(".data"))) = 0;
 

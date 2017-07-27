@@ -29,7 +29,7 @@
 #define PRINT_TEXT2(x, y, ...) { snprintf(msg, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, msg); OSScreenPutFontEx(1, x, y, msg); }
 #define PRINT_TEXT3(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
 
-#define BUILD 1.3
+#define BUILD "1.3.1"
 
 u8 isFirstBoot __attribute__((section(".data"))) = 1;
 
@@ -214,7 +214,7 @@ int Menu_Main()
             VPADRead(0, &vpad_data, 1, &error);
 
             // Title
-            PRINT_TEXT2(21, 1, "-- SwapDRC v%.1f --", BUILD);
+            PRINT_TEXT2(21, 1, "-- SwapDRC %s --", BUILD);
 
             if (gui_mode == 0) // IP selector
             {
@@ -249,7 +249,7 @@ int Menu_Main()
                 PRINT_TEXT2(2, 4, "* Press L and Minus together.");
                 PRINT_TEXT2(2, 5, "* Press the TV button.");
 				PRINT_TEXT2(0, 7, "Switch on/off Gamepad LCD:");
-				PRINT_TEXT2(2, 8, "* Press and hold R-Stick for 3 seconds.");
+				PRINT_TEXT2(2, 8, "* Press and hold R-Stick for 3-6 seconds.");
 				PRINT_TEXT2(0, 10, "Splatoon's Enhanced Controls:");
 				PRINT_TEXT2(2, 11, "* Press B to swap displays except in-game menus.");
 				PRINT_TEXT2(2, 12, "* Hold A + D-PAD to super jump to a teammate in a match.");

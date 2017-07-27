@@ -12,25 +12,28 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error) {
 	int result = real_VPADRead(chan, buffer, buffer_size, error);
 	if(result <= 0) return result;
 
-	uint32_t hCombo[2] = {
-		buffer[0].btns_h  & (VPAD_BUTTON_MINUS | VPAD_BUTTON_L),
-		buffer[0].btns_h & VPAD_BUTTON_TV
-	};
+#if !LITE
+	// switch on L and SELECT
+	if ((buffer[0].btns_h & (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) == (VPAD_BUTTON_MINUS | VPAD_BUTTON_L) &&
+		gAppStatus != 2) {
+		if (buffer->btns_d & (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) {
+			drcSwap();
+		}
+	}
+#endif
 
-	// switch on L and SELECT and TV button
-	if (((hCombo[0] == (VPAD_BUTTON_MINUS | VPAD_BUTTON_L)) ||
-		(hCombo[1] == VPAD_BUTTON_TV)) && (
-		gHomeCoolDown == 0 && (gAppStatus != 2))) {
-        gHomeCoolDown = hCombo[0]? 0x1E : 0x48;
+	// switch on TV button
+	if (buffer[0].btns_h & VPAD_BUTTON_TV && (gCoolDown == 0 && gAppStatus != 2)) {
+		gCoolDown = 0x20;
 		drcSwap();
 	}
-	else if (gHomeCoolDown > 0) {
-		gHomeCoolDown--;
+	else if (gCoolDown > 0) {
+		gCoolDown--;
 	}
 
 	// switch on/off gamepad screen
 	if (buffer[0].btns_h & VPAD_BUTTON_STICK_R) {
-		if (gLCDDelay == 0xB4) {
+		if (gLCDDelay == 0xB0) {
 			VPADGetLcdMode(0, &gLCDMode);
 			if (gLCDMode != 1) {
 				VPADSetLcdMode(0, 1); // Turn it off

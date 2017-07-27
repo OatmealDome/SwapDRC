@@ -14,7 +14,7 @@ extern struct fs_patcher_utils fspatchervars __attribute__((section(".data")));
 extern int isSplatoon;
 extern int drcMode;
 extern uint32_t gAppStatus;
-extern int gHomeCoolDown;
+extern int gCoolDown;
 extern int gLCDDelay;
 extern s32 gLCDMode;
 
