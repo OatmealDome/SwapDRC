@@ -24,7 +24,7 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error) {
 
 	// switch on TV button
 	if (buffer[0].btns_h & VPAD_BUTTON_TV && (gCoolDown == 0 && gAppStatus != 2)) {
-		gCoolDown = 0x20;
+		gCoolDown = 0x1F;
 		drcSwap();
 	}
 	else if (gCoolDown > 0) {
@@ -32,14 +32,16 @@ DECL(int, VPADRead, int chan, VPADData *buffer, u32 buffer_size, s32 *error) {
 	}
 
 	// switch on/off gamepad screen
-	if (buffer[0].btns_h & VPAD_BUTTON_STICK_R) {
+	if (buffer[0].btns_d & VPAD_BUTTON_STICK_R && gLCDMode != 0xFF) {
+		VPADSetLcdMode(0, gLCDMode = 0xFF); // Turn it on
+	}
+	else if (buffer[0].btns_h & VPAD_BUTTON_STICK_R) {
 		if (gLCDDelay == 0xB0) {
-			VPADGetLcdMode(0, &gLCDMode);
 			if (gLCDMode != 1) {
-				VPADSetLcdMode(0, 1); // Turn it off
+				VPADSetLcdMode(0, gLCDMode = 1); // Turn it off
 			}
 			else {
-				VPADSetLcdMode(0, 0xFF); // Turn it on
+				VPADSetLcdMode(0, gLCDMode = 0xFF); // Turn it on
 			}
 
 			// reset delay

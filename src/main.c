@@ -29,7 +29,7 @@
 #define PRINT_TEXT2(x, y, ...) { snprintf(msg, 80, __VA_ARGS__); OSScreenPutFontEx(0, x, y, msg); OSScreenPutFontEx(1, x, y, msg); }
 #define PRINT_TEXT3(x, y, _fmt, ...) { __os_snprintf(msg, 80, _fmt, __VA_ARGS__); OSScreenPutFontEx(1, x, y, msg); }
 
-#define BUILD "1.3.1"
+#define BUILD "1.3.2"
 
 u8 isFirstBoot __attribute__((section(".data"))) = 1;
 
